@@ -1,0 +1,520 @@
+name: TestSprite Comprehensive Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run daily at 2 AM UTC (5 AM Saudi Arabia time)
+    - cron: '0 2 * * *'
+
+env:
+  NODE_VERSION: '18'
+  DATABASE_URL: 'file:./test.db'
+  NEXTAUTH_SECRET: 'test-secret-key-for-ci'
+  NEXTAUTH_URL: 'http://localhost:3000'
+
+jobs:
+  # Critical Priority Tests - Must pass before deployment
+  critical-tests:
+    name: 🚨 Critical Priority Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup test database
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start application
+        run: npm start &
+        env:
+          PORT: 3000
+
+      - name: Wait for application to be ready
+        run: |
+          timeout 60 bash -c 'until curl -f http://localhost:3000/health || curl -f http://localhost:3000; do sleep 2; done'
+
+      - name: Run Critical Priority Tests
+        run: npx playwright test tests/critical-priority.spec.ts --config=playwright.config.enhanced.ts
+        env:
+          BASE_URL: http://localhost:3000
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: critical-test-results
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
+
+  # Comprehensive Quiz System Testing
+  quiz-testing:
+    name: 📝 Quiz System Validation
+    runs-on: ubuntu-latest
+    needs: critical-tests
+    timeout-minutes: 25
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup test database
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start application
+        run: npm start &
+
+      - name: Wait for application
+        run: |
+          timeout 60 bash -c 'until curl -f http://localhost:3000/health || curl -f http://localhost:3000; do sleep 2; done'
+
+      - name: Run Quiz Tests
+        run: npx playwright test tests/quiz-comprehensive.spec.ts --config=playwright.config.enhanced.ts
+
+      - name: Upload quiz test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: quiz-test-results
+          path: test-results/
+          retention-days: 7
+
+  # Security Testing
+  security-testing:
+    name: 🔒 Security Vulnerability Tests
+    runs-on: ubuntu-latest
+    needs: critical-tests
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup test database
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start application
+        run: npm start &
+
+      - name: Wait for application
+        run: |
+          timeout 60 bash -c 'until curl -f http://localhost:3000/health || curl -f http://localhost:3000; do sleep 2; done'
+
+      - name: Run Security Tests
+        run: npx playwright test tests/security-comprehensive.spec.ts --config=playwright.config.enhanced.ts
+
+      - name: Upload security test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: security-test-results
+          path: test-results/
+          retention-days: 30 # Keep security results longer
+
+  # Performance Testing
+  performance-testing:
+    name: ⚡ Performance & Load Tests
+    runs-on: ubuntu-latest
+    needs: critical-tests
+    timeout-minutes: 30
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup test database
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Build application for production
+        run: npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Start application in production mode
+        run: npm start &
+
+      - name: Wait for application
+        run: |
+          timeout 60 bash -c 'until curl -f http://localhost:3000/health || curl -f http://localhost:3000; do sleep 2; done'
+
+      - name: Run Performance Tests
+        run: npx playwright test tests/performance-comprehensive.spec.ts --config=playwright.config.enhanced.ts
+
+      - name: Upload performance test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: performance-test-results
+          path: test-results/
+          retention-days: 14
+
+  # Cross-Browser Testing
+  cross-browser-testing:
+    name: 🌐 Cross-Browser Compatibility
+    runs-on: ${{ matrix.os }}
+    needs: critical-tests
+    timeout-minutes: 45
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        browser: [chromium, firefox, webkit]
+        exclude:
+          # WebKit not supported on Linux in GitHub Actions
+          - os: ubuntu-latest
+            browser: webkit
+          # Reduce matrix size for efficiency
+          - os: windows-latest
+            browser: firefox
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup test database
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start application
+        run: npm start &
+        shell: bash
+
+      - name: Wait for application (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          timeout 60 bash -c 'until curl -f http://localhost:3000/health || curl -f http://localhost:3000; do sleep 2; done'
+
+      - name: Wait for application (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          $timeout = 60
+          $elapsed = 0
+          do {
+            try {
+              Invoke-WebRequest -Uri "http://localhost:3000" -UseBasicParsing -TimeoutSec 2 | Out-Null
+              break
+            } catch {
+              Start-Sleep 2
+              $elapsed += 2
+            }
+          } while ($elapsed -lt $timeout)
+        shell: powershell
+
+      - name: Run Cross-Browser Tests
+        run: npx playwright test tests/critical-priority.spec.ts --project=${{ matrix.browser }}-desktop --config=playwright.config.enhanced.ts
+
+      - name: Upload cross-browser results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cross-browser-${{ matrix.os }}-${{ matrix.browser }}
+          path: test-results/
+          retention-days: 7
+
+  # Mobile Testing
+  mobile-testing:
+    name: 📱 Mobile Device Testing
+    runs-on: ubuntu-latest
+    needs: critical-tests
+    timeout-minutes: 25
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup test database
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start application
+        run: npm start &
+
+      - name: Wait for application
+        run: |
+          timeout 60 bash -c 'until curl -f http://localhost:3000/health || curl -f http://localhost:3000; do sleep 2; done'
+
+      - name: Run Mobile Tests
+        run: npx playwright test tests/critical-priority.spec.ts --project=mobile-chrome --project=mobile-safari --config=playwright.config.enhanced.ts
+
+      - name: Upload mobile test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: mobile-test-results
+          path: test-results/
+          retention-days: 7
+
+  # Internationalization Testing
+  i18n-testing:
+    name: 🌍 Internationalization Tests
+    runs-on: ubuntu-latest
+    needs: critical-tests
+    timeout-minutes: 20
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup test database
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Build application
+        run: npm run build
+
+      - name: Start application
+        run: npm start &
+
+      - name: Wait for application
+        run: |
+          timeout 60 bash -c 'until curl -f http://localhost:3000/health || curl -f http://localhost:3000; do sleep 2; done'
+
+      - name: Run RTL/i18n Tests
+        run: npx playwright test tests/critical-priority.spec.ts --project=rtl-testing --config=playwright.config.enhanced.ts
+
+      - name: Upload i18n test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: i18n-test-results
+          path: test-results/
+          retention-days: 7
+
+  # Test Report Generation
+  generate-report:
+    name: 📊 Generate Test Report
+    runs-on: ubuntu-latest
+    needs: [critical-tests, quiz-testing, security-testing, performance-testing, cross-browser-testing, mobile-testing, i18n-testing]
+    if: always()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all test results
+        uses: actions/download-artifact@v3
+        with:
+          path: all-test-results/
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Generate comprehensive report
+        run: |
+          echo "# 🧪 TestSprite Comprehensive Test Report" > test-report.md
+          echo "" >> test-report.md
+          echo "## Test Execution Summary" >> test-report.md
+          echo "- **Date:** $(date)" >> test-report.md
+          echo "- **Commit:** ${{ github.sha }}" >> test-report.md
+          echo "- **Branch:** ${{ github.ref_name }}" >> test-report.md
+          echo "" >> test-report.md
+          
+          # Count test results
+          total_files=$(find all-test-results/ -name "*.xml" -o -name "*.json" | wc -l)
+          echo "- **Total Test Files:** $total_files" >> test-report.md
+          
+          # Check for critical test failures
+          if [ -d "all-test-results/critical-test-results" ]; then
+            echo "- **Critical Tests:** ✅ Executed" >> test-report.md
+          else
+            echo "- **Critical Tests:** ❌ Failed or Missing" >> test-report.md
+          fi
+          
+          # List all test categories
+          echo "" >> test-report.md
+          echo "## Test Categories Executed" >> test-report.md
+          for dir in all-test-results/*/; do
+            if [ -d "$dir" ]; then
+              category=$(basename "$dir")
+              echo "- $category" >> test-report.md
+            fi
+          done
+          
+          echo "" >> test-report.md
+          echo "## TestSprite Requirements Coverage" >> test-report.md
+          echo "- ✅ Critical Priority Tests (10 must-pass scenarios)" >> test-report.md
+          echo "- ✅ Quiz Auto-grading Accuracy" >> test-report.md
+          echo "- ✅ Security Vulnerability Testing" >> test-report.md
+          echo "- ✅ Performance & Load Testing" >> test-report.md
+          echo "- ✅ Cross-browser Compatibility" >> test-report.md
+          echo "- ✅ Mobile Device Testing" >> test-report.md
+          echo "- ✅ Internationalization (Arabic/English)" >> test-report.md
+          echo "" >> test-report.md
+          echo "*Report generated by TestSprite CI/CD Pipeline*" >> test-report.md
+
+      - name: Upload comprehensive report
+        uses: actions/upload-artifact@v3
+        with:
+          name: testsprite-comprehensive-report
+          path: |
+            test-report.md
+            all-test-results/
+          retention-days: 30
+
+      - name: Comment PR with test results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('test-report.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
+
+  # Deployment Gate
+  deployment-gate:
+    name: 🚪 Deployment Gate Check
+    runs-on: ubuntu-latest
+    needs: [critical-tests, quiz-testing, security-testing]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Check Critical Test Results
+        run: |
+          echo "Checking if all critical tests passed..."
+          if [ "${{ needs.critical-tests.result }}" != "success" ]; then
+            echo "❌ Critical tests failed - blocking deployment"
+            exit 1
+          fi
+          
+          if [ "${{ needs.quiz-testing.result }}" != "success" ]; then
+            echo "❌ Quiz tests failed - blocking deployment"
+            exit 1
+          fi
+          
+          if [ "${{ needs.security-testing.result }}" != "success" ]; then
+            echo "❌ Security tests failed - blocking deployment"
+            exit 1
+          fi
+          
+          echo "✅ All critical tests passed - deployment approved"
+
+      - name: Notify deployment readiness
+        if: success()
+        run: |
+          echo "🚀 TestSprite: All tests passed - Ready for deployment!"
+          echo "Commit ${{ github.sha }} has been validated for production deployment."

@@ -1,0 +1,307 @@
+{
+  "common": {
+    "appName": "Ebad Academy",
+    "tagline": "Build Your Islam From Foundation",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit"
+  },
+  "landing": {
+    "hero": {
+      "title": "Build Your Islam From Foundation",
+      "subtitle": "A comprehensive university-style curriculum to learn Islam with awareness and depth",
+      "cta": "Start Free Journey",
+      "trustIndicators": {
+        "students": "1000+ Students",
+        "countries": "50+ Countries",
+        "levels": "4 Levels"
+      }
+    },
+    "vision": {
+      "title": "Our Vision",
+      "description": "We aim to provide a structured, comprehensive Islamic education that builds knowledge from the ground up",
+      "videoLabel": "Welcome Video",
+      "goals": {
+        "goal1": "Systematic Learning Path",
+        "goal2": "Deep Understanding",
+        "goal3": "Practical Application",
+        "goal4": "Continuous Progress"
+      }
+    },
+    "features": {
+      "title": "Why Ebad Academy?",
+      "subtitle": "Everything you need to master Islamic knowledge",
+      "feature1": {
+        "title": "4 Progressive Levels",
+        "description": "From fundamentals to mastery"
+      },
+      "feature2": {
+        "title": "6 Islamic Sciences",
+        "description": "Comprehensive curriculum"
+      },
+      "feature3": {
+        "title": "Interactive Mind Maps",
+        "description": "Visual learning tools"
+      },
+      "feature4": {
+        "title": "Auto-Graded Quizzes",
+        "description": "Instant feedback"
+      },
+      "feature5": {
+        "title": "PDF Study Materials",
+        "description": "Download and study offline"
+      },
+      "feature6": {
+        "title": "Bilingual Content",
+        "description": "Arabic and English"
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "subtitle": "Your journey to Islamic mastery in 3 simple steps",
+      "step1": {
+        "title": "Register & Start Level 1",
+        "description": "Create your free account and begin your journey"
+      },
+      "step2": {
+        "title": "Study Lessons & Take Quizzes",
+        "description": "Learn at your own pace with interactive content"
+      },
+      "step3": {
+        "title": "Progress Through Levels",
+        "description": "Unlock new levels as you master each stage"
+      }
+    },
+    "testimonials": {
+      "title": "What Students Say",
+      "subtitle": "Real stories from our amazing students",
+      "student1": {
+        "name": "Ahmed Hassan",
+        "country": "Egypt",
+        "text": "The structured approach helped me understand Islam deeply"
+      },
+      "student2": {
+        "name": "Fatima Ali",
+        "country": "UAE",
+        "text": "Best Islamic learning platform I've ever used"
+      },
+      "student3": {
+        "name": "Omar Khan",
+        "country": "Pakistan",
+        "text": "The quizzes really test your understanding"
+      }
+    },
+    "stats": {
+      "students": "Students",
+      "lessons": "Lessons",
+      "countries": "Countries",
+      "levels": "Levels"
+    },
+    "finalCta": {
+      "title": "Join 1000+ Students Worldwide",
+      "subtitle": "Start your Islamic education journey today",
+      "cta": "Register Now"
+    },
+    "footer": {
+      "about": "About Us",
+      "contact": "Contact",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "rights": "All rights reserved"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Login",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign In",
+      "noAccount": "Don't have an account?",
+      "register": "Register here",
+      "error": "Invalid email or password"
+    },
+    "register": {
+      "title": "Register",
+      "name": "Full Name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Create Account",
+      "hasAccount": "Already have an account?",
+      "login": "Login here",
+      "passwordMismatch": "Passwords do not match",
+      "success": "Account created successfully"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "progress": "Your Progress",
+    "currentLevel": "Current Level",
+    "completedLessons": "Completed Lessons",
+    "averageScore": "Average Score",
+    "continueStudying": "Continue Studying",
+    "startNewLesson": "Start New Lesson",
+    "nav": {
+      "dashboard": "Dashboard",
+      "myLevels": "My Levels",
+      "spiritualProgress": "Spiritual Progress",
+      "leaderboard": "Leaderboard",
+      "aqeedah": "Aqeedah",
+      "fiqh": "Fiqh",
+      "seerah": "Seerah",
+      "tafseer": "Tafseer",
+      "hadith": "Hadith Sciences",
+      "tarbiyah": "Tarbiyah",
+      "achievements": "Achievements",
+      "bookmarks": "Bookmarks",
+      "profile": "Profile"
+    },
+    "continuelearning": "Continue Learning",
+    "continueLearning": "Continue Learning",
+    "branchProgress": "Branch Progress",
+    "nextLesson": "Next Lesson",
+    "recentActivity": "Recent Activity",
+    "achievements": "Achievements",
+    "viewAll": "View All",
+    "locked": "Locked",
+    "continue": "Continue",
+    "start": "Start",
+    "logout": "Logout",
+    "lessonsCompleted": "lessons completed",
+    "overallProgress": "Overall Progress",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode"
+  },
+  "levels": {
+    "level1": "Level 1 - Fundamentals",
+    "level2": "Level 2 - Deepening",
+    "level3": "Level 3 - Specialization",
+    "level4": "Level 4 - Mastery",
+    "locked": "Locked - Complete previous level first",
+    "unlocked": "Unlocked",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "backToLevels": "Back to Levels",
+    "title": "Levels",
+    "subtitle": "Your learning journey from fundamentals to mastery",
+    "loading": "Loading...",
+    "progress": "Progress",
+    "lessons": "lessons",
+    "continue": "Continue",
+    "review": "Review"
+  },
+  "branches": {
+    "aqeedah": "Aqeedah",
+    "fiqh": "Fiqh",
+    "seerah": "Seerah",
+    "tafseer": "Tafseer",
+    "hadith": "Hadith Sciences",
+    "tarbiyah": "Tarbiyah"
+  },
+  "lesson": {
+    "downloadPdf": "Download PDF",
+    "viewMindmap": "View Mind Map",
+    "startQuiz": "Start Quiz",
+    "completed": "Lesson Completed",
+    "notCompleted": "Complete the lesson to unlock the quiz",
+    "markAsRead": "I have finished watching all videos",
+    "markedAsRead": "You've marked this lesson as watched",
+    "readRequired": "Please mark the lesson as watched before taking the quiz"
+  },
+  "quiz": {
+    "title": "Quiz",
+    "question": "Question",
+    "of": "of",
+    "submit": "Submit Answer",
+    "next": "Next Question",
+    "finish": "Finish Quiz",
+    "results": "Quiz Results",
+    "score": "Your Score",
+    "passed": "Congratulations! You passed!",
+    "failed": "You need 60% to pass. Try again!",
+    "retake": "Retake Quiz",
+    "continue": "Continue Learning",
+    "levelUnlocked": {
+      "title": "🎉 Level Unlocked!",
+      "congratulations": "Congratulations! You've completed all lessons and quizzes in this level.",
+      "levelNumber": "Level {level} is now unlocked!",
+      "description": "You can now access all lessons and content in the next level. Keep up the great work!",
+      "viewLevels": "View All Levels",
+      "backToDashboard": "Back to Dashboard"
+    }
+  },
+  "branch": {
+    "dashboard": "Dashboard",
+    "backToDashboard": "Back to Dashboard",
+    "lessons": "Lessons",
+    "completed": "Completed",
+    "progress": "Progress",
+    "locked": "Locked",
+    "minutes": "min",
+    "questions": "questions",
+    "startLesson": "Start Lesson"
+  },
+  "profile": {
+    "title": "Profile Settings",
+    "subtitle": "Manage your account settings and preferences",
+    "personalInfo": {
+      "title": "Personal Information",
+      "name": "Full Name",
+      "email": "Email Address",
+      "emailNote": "Your email cannot be changed",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "success": "Profile updated successfully",
+      "error": "Failed to update profile"
+    },
+    "security": {
+      "title": "Security",
+      "changePassword": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password",
+      "updatePassword": "Update Password",
+      "updating": "Updating...",
+      "success": "Password updated successfully",
+      "error": "Failed to update password",
+      "passwordMismatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters"
+    },
+    "preferences": {
+      "title": "Preferences",
+      "language": "Language",
+      "languageArabic": "Arabic",
+      "languageEnglish": "English",
+      "theme": "Theme",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "themeSystem": "System"
+    },
+    "statistics": {
+      "title": "Your Statistics",
+      "memberSince": "Member Since",
+      "totalLessons": "Total Lessons Completed",
+      "totalQuizzes": "Total Quizzes Taken",
+      "averageScore": "Average Quiz Score",
+      "currentLevel": "Current Level",
+      "badges": "Badges Earned"
+    },
+    "dangerZone": {
+      "title": "Danger Zone",
+      "deleteAccount": "Delete Account",
+      "deleteWarning": "Once you delete your account, there is no going back. Please be certain.",
+      "deleteButton": "Delete My Account",
+      "deleteConfirm": "Are you sure you want to delete your account? This action cannot be undone.",
+      "cancel": "Cancel"
+    }
+  }
+}

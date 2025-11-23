@@ -1,0 +1,181 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - link "Ebad Academy" [ref=e5] [cursor=pointer]:
+          - /url: /en
+          - img [ref=e7]
+          - generic [ref=e11]: Ebad Academy
+        - generic [ref=e12]:
+          - button "Switch to dark mode" [ref=e13] [cursor=pointer]:
+            - img [ref=e15]
+          - button "AR" [ref=e21] [cursor=pointer]:
+            - img [ref=e22]
+            - generic [ref=e25]: AR
+          - link "Login" [ref=e26] [cursor=pointer]:
+            - /url: /en/login
+          - link "Get Started" [ref=e27] [cursor=pointer]:
+            - /url: /en/register
+    - generic [ref=e31]:
+      - generic [ref=e32]:
+        - generic [ref=e33]:
+          - img [ref=e34]
+          - generic [ref=e37]: University-Style Curriculum
+        - heading "Build Your Islam From Foundation" [level=1] [ref=e38]
+        - paragraph [ref=e39]: A comprehensive university-style curriculum to learn Islam with awareness and depth
+        - link "Start Free Journey" [ref=e41] [cursor=pointer]:
+          - /url: /en/register
+          - button "Start Free Journey" [ref=e42]:
+            - generic [ref=e43]: Start Free Journey
+            - img [ref=e44]
+        - generic [ref=e46]:
+          - generic [ref=e47]:
+            - img [ref=e48]
+            - generic [ref=e53]: 1000+ Students
+          - generic [ref=e54]:
+            - img [ref=e55]
+            - generic [ref=e58]: 50+ Countries
+          - generic [ref=e59]:
+            - img [ref=e60]
+            - generic [ref=e63]: 4 Levels
+      - generic [ref=e65]:
+        - generic [ref=e67]:
+          - img [ref=e69]
+          - generic [ref=e71]:
+            - paragraph [ref=e72]: Lessons
+            - paragraph [ref=e73]: 200+
+        - generic [ref=e75]:
+          - img [ref=e77]
+          - generic [ref=e82]:
+            - paragraph [ref=e83]: Students
+            - paragraph [ref=e84]: 1000+
+        - img [ref=e86]
+    - generic [ref=e90]:
+      - generic [ref=e91]:
+        - heading "Why Ebad Academy?" [level=2] [ref=e92]
+        - paragraph [ref=e93]: Everything you need to master Islamic knowledge
+      - generic [ref=e94]:
+        - generic [ref=e95]:
+          - img [ref=e97]
+          - heading "4 Progressive Levels" [level=3] [ref=e100]
+          - paragraph [ref=e101]: From fundamentals to mastery
+        - generic [ref=e102]:
+          - img [ref=e104]
+          - heading "6 Islamic Sciences" [level=3] [ref=e106]
+          - paragraph [ref=e107]: Comprehensive curriculum
+        - generic [ref=e108]:
+          - img [ref=e110]
+          - heading "Interactive Mind Maps" [level=3] [ref=e114]
+          - paragraph [ref=e115]: Visual learning tools
+        - generic [ref=e116]:
+          - img [ref=e118]
+          - heading "Auto-Graded Quizzes" [level=3] [ref=e121]
+          - paragraph [ref=e122]: Instant feedback
+        - generic [ref=e123]:
+          - img [ref=e125]
+          - heading "PDF Study Materials" [level=3] [ref=e128]
+          - paragraph [ref=e129]: Download and study offline
+        - generic [ref=e130]:
+          - img [ref=e132]
+          - heading "Bilingual Content" [level=3] [ref=e135]
+          - paragraph [ref=e136]: Arabic and English
+    - generic [ref=e138]:
+      - generic [ref=e139]:
+        - heading "How It Works" [level=2] [ref=e140]
+        - paragraph [ref=e141]: Your journey to Islamic mastery in 3 simple steps
+      - generic [ref=e142]:
+        - generic [ref=e143]:
+          - generic [ref=e144]:
+            - img [ref=e146]
+            - generic [ref=e152]: "01"
+          - heading "Register & Start Level 1" [level=3] [ref=e153]
+          - paragraph [ref=e154]: Create your free account and begin your journey
+        - generic [ref=e155]:
+          - generic [ref=e156]:
+            - img [ref=e158]
+            - generic [ref=e161]: "02"
+          - heading "Study Lessons & Take Quizzes" [level=3] [ref=e162]
+          - paragraph [ref=e163]: Learn at your own pace with interactive content
+        - generic [ref=e164]:
+          - generic [ref=e165]:
+            - img [ref=e167]
+            - generic [ref=e171]: "03"
+          - heading "Progress Through Levels" [level=3] [ref=e172]
+          - paragraph [ref=e173]: Unlock new levels as you master each stage
+    - generic [ref=e175]:
+      - generic [ref=e176]:
+        - heading "What Students Say" [level=2] [ref=e177]
+        - paragraph [ref=e178]: Real stories from our amazing students
+      - generic [ref=e179]:
+        - generic [ref=e181]:
+          - generic [ref=e182]: "\""
+          - paragraph [ref=e183]: The structured approach helped me understand Islam deeply
+          - heading "Ahmed Hassan" [level=4] [ref=e184]
+          - paragraph [ref=e185]: Egypt
+        - button [ref=e186] [cursor=pointer]:
+          - img [ref=e187]
+        - button [ref=e189] [cursor=pointer]:
+          - img [ref=e190]
+        - generic [ref=e192]:
+          - button [ref=e193] [cursor=pointer]
+          - button [ref=e194] [cursor=pointer]
+          - button [ref=e195] [cursor=pointer]
+    - generic [ref=e198]:
+      - generic [ref=e199]:
+        - img [ref=e201]
+        - generic [ref=e206]: 1000+
+        - generic [ref=e207]: Students
+      - generic [ref=e208]:
+        - img [ref=e210]
+        - generic [ref=e212]: 200+
+        - generic [ref=e213]: Lessons
+      - generic [ref=e214]:
+        - img [ref=e216]
+        - generic [ref=e219]: 50+
+        - generic [ref=e220]: Countries
+      - generic [ref=e221]:
+        - img [ref=e223]
+        - generic [ref=e226]: "4"
+        - generic [ref=e227]: Levels
+    - generic [ref=e229]:
+      - heading "Join 1000+ Students Worldwide" [level=2] [ref=e230]
+      - paragraph [ref=e231]: Start your Islamic education journey today
+      - link "Register Now" [ref=e232] [cursor=pointer]:
+        - /url: /en/register
+        - button "Register Now" [ref=e233]:
+          - generic [ref=e234]: Register Now
+          - img [ref=e235]
+    - contentinfo [ref=e238]:
+      - generic [ref=e239]:
+        - generic [ref=e240]:
+          - generic [ref=e241]:
+            - generic [ref=e242]:
+              - img [ref=e243]
+              - heading "Ebad Academy" [level=3] [ref=e246]
+            - paragraph [ref=e247]: A comprehensive university-style curriculum to learn Islam with awareness and depth
+          - generic [ref=e248]:
+            - heading "About Us" [level=4] [ref=e249]
+            - list [ref=e250]:
+              - listitem [ref=e251]:
+                - link "About Us" [ref=e252] [cursor=pointer]:
+                  - /url: /en/about
+              - listitem [ref=e253]:
+                - link "Contact" [ref=e254] [cursor=pointer]:
+                  - /url: /en/contact
+          - generic [ref=e255]:
+            - heading "Privacy Policy" [level=4] [ref=e256]
+            - list [ref=e257]:
+              - listitem [ref=e258]:
+                - link "Privacy Policy" [ref=e259] [cursor=pointer]:
+                  - /url: /en/privacy
+              - listitem [ref=e260]:
+                - link "Terms of Service" [ref=e261] [cursor=pointer]:
+                  - /url: /en/terms
+        - paragraph [ref=e263]: © 2024 Ebad Academy. All rights reserved
+  - button "Open Next.js Dev Tools" [ref=e269] [cursor=pointer]:
+    - img [ref=e270]
+  - alert [ref=e273]
+```

@@ -1,0 +1,5 @@
+
+> ebad_academy_website@1.0.0 test
+> playwright test
+
+[dotenv@17.2.3] injecting env (6) from .env.test -- tip: ⚙️  override existing env vars with { override: true }

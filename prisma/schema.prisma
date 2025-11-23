@@ -1,0 +1,293 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  idNumber      String    @unique
+  email         String    @unique
+  name          String
+  phoneNumber   String
+  password      String
+  role          String    @default("student") // "student" or "admin"
+  languagePref  String    @default("ar") // "ar" or "en"
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  progress      UserProgress[]
+  levelStatus   UserLevelStatus[]
+  quizAttempts  QuizAttempt[]
+  badges        UserBadge[]
+  lessonNotes   LessonNote[]
+  spiritualProgress SpiritualProgress[]
+  actionItemCompletions ActionItemCompletion[]
+  videoTimestamps VideoTimestamp[]
+  lessonBookmarks LessonBookmark[]
+}
+
+model Level {
+  id              Int       @id @default(autoincrement())
+  levelNumber     Int       @unique // 1, 2, 3, 4
+  nameAr          String
+  nameEn          String
+  descriptionAr   String
+  descriptionEn   String
+  order           Int
+  
+  lessons         Lesson[]
+  userStatus      UserLevelStatus[]
+}
+
+model Branch {
+  id        Int       @id @default(autoincrement())
+  nameAr    String    @unique // العقيدة
+  nameEn    String    @unique // Aqeedah
+  icon      String    // Icon identifier
+  slug      String    @unique
+  order     Int
+  
+  lessons   Lesson[]
+}
+
+model Lesson {
+  id              Int       @id @default(autoincrement())
+  branchId        Int
+  levelId         Int
+  titleAr         String
+  titleEn         String
+  descriptionAr   String?   // Brief description
+  descriptionEn   String?   // Brief description
+  videoUrlsAr     String?   // JSON array of video URLs for Arabic
+  videoUrlsEn     String?   // JSON array of video URLs for English
+  pdfUrlAr        String?
+  pdfUrlEn        String?
+  mindmapData     String?   // Interactive mind map structure (JSON string)
+  actionItemsAr   String?   // JSON array of action items in Arabic
+  actionItemsEn   String?   // JSON array of action items in English
+  duration        Int       // Estimated minutes
+  order           Int
+
+  branch          Branch    @relation(fields: [branchId], references: [id])
+  level           Level     @relation(fields: [levelId], references: [id])
+  questions       Question[]
+  userProgress    UserProgress[]
+  quizAttempts    QuizAttempt[]
+  notes           LessonNote[]
+  actionItemCompletions ActionItemCompletion[]
+  videoTimestamps VideoTimestamp[]
+  bookmarks       LessonBookmark[]
+
+  @@unique([branchId, levelId, order])
+}
+
+model Question {
+  id              Int       @id @default(autoincrement())
+  lessonId        Int
+  questionTextAr  String
+  questionTextEn  String
+  type            String    // "multiple_choice" or "true_false"
+  optionsAr       String?   // ["option1", "option2", ...] for MCQ (JSON string)
+  optionsEn       String?   // ["option1", "option2", ...] for MCQ (JSON string)
+  correctAnswer   String    // Index or "true"/"false"
+  explanationAr   String?
+  explanationEn   String?
+  order           Int
+  
+  lesson          Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  userAnswers     UserAnswer[]
+}
+
+model UserProgress {
+  id              Int       @id @default(autoincrement())
+  userId          String
+  lessonId        Int
+  completed       Boolean   @default(false)
+  markedAsRead    Boolean   @default(false) // User marked lesson as read
+  score           Float?    // Percentage (0-100)
+  attempts        Int       @default(0)
+  lastAttempt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson          Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model UserLevelStatus {
+  id                    Int       @id @default(autoincrement())
+  userId                String
+  levelId               Int
+  isUnlocked            Boolean   @default(false)
+  completionPercentage  Float     @default(0)
+  unlockedAt            DateTime?
+  
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level                 Level     @relation(fields: [levelId], references: [id])
+  
+  @@unique([userId, levelId])
+}
+
+model QuizAttempt {
+  id              Int       @id @default(autoincrement())
+  userId          String
+  lessonId        Int
+  score           Float
+  totalQuestions  Int
+  correctAnswers  Int
+  passed          Boolean
+  attemptDate     DateTime  @default(now())
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson          Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  answers         UserAnswer[]
+}
+
+model UserAnswer {
+  id              Int       @id @default(autoincrement())
+  attemptId       Int
+  questionId      Int
+  answer          String
+  isCorrect       Boolean
+
+  attempt         QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question        Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model Badge {
+  id              Int       @id @default(autoincrement())
+  nameAr          String
+  nameEn          String
+  descriptionAr   String
+  descriptionEn   String
+  iconUrl         String
+  criteria        String    // Conditions to earn this badge (JSON string)
+
+  userBadges      UserBadge[]
+}
+
+model UserBadge {
+  id              Int       @id @default(autoincrement())
+  userId          String
+  badgeId         Int
+  earnedDate      DateTime  @default(now())
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge           Badge     @relation(fields: [badgeId], references: [id])
+
+  @@unique([userId, badgeId])
+}
+
+model LessonNote {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  lessonId  Int
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+}
+
+model SpiritualProgress {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  date        DateTime @default(now())
+
+  // Daily worship tracking
+  fajr        Boolean  @default(false)
+  dhuhr       Boolean  @default(false)
+  asr         Boolean  @default(false)
+  maghrib     Boolean  @default(false)
+  isha        Boolean  @default(false)
+
+  // Quran tracking
+  quranPages  Int      @default(0)
+  quranMinutes Int     @default(0)
+
+  // Fasting
+  fasting     Boolean  @default(false)
+
+  // Good deeds
+  charity     Boolean  @default(false)
+  charityAmount Float  @default(0)
+
+  dhikr       Boolean  @default(false)
+  dhikrCount  Int      @default(0)
+
+  dua         Boolean  @default(false)
+
+  goodDeeds   String?  // JSON array of good deeds
+  notes       String?  // Personal reflection
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId])
+  @@index([date])
+}
+
+model ActionItemCompletion {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  lessonId    Int
+  itemIndex   Int      // Index of the action item in the lesson's actionItems array
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId, itemIndex])
+  @@index([userId])
+  @@index([lessonId])
+}
+
+model VideoTimestamp {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  lessonId    Int
+  videoIndex  Int      // Which video in the lesson (0-based index)
+  timestamp   Int      // Time in seconds
+  label       String   // User-defined label for this timestamp
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([lessonId])
+  @@index([userId, lessonId])
+}
+
+model LessonBookmark {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  lessonId    Int
+  createdAt   DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([lessonId])
+}
