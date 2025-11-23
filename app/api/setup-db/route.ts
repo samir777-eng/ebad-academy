@@ -56,7 +56,7 @@ export async function GET() {
     const branches = await prisma.branch.findMany();
 
     if (branches.length === 0) {
-      // Create initial branches
+      // Create initial branches - 6 branches per level
       await prisma.branch.createMany({
         data: [
           {
@@ -81,18 +81,25 @@ export async function GET() {
             order: 3,
           },
           {
-            nameAr: "الأخلاق",
-            nameEn: "Akhlaq",
-            icon: "💎",
-            slug: "akhlaq",
+            nameAr: "التفسير",
+            nameEn: "Tafseer",
+            icon: "�",
+            slug: "tafseer",
             order: 4,
           },
           {
-            nameAr: "القرآن",
-            nameEn: "Quran",
-            icon: "📕",
-            slug: "quran",
+            nameAr: "الحديث",
+            nameEn: "Hadith",
+            icon: "📜",
+            slug: "hadith",
             order: 5,
+          },
+          {
+            nameAr: "التربية",
+            nameEn: "Tarbiyah",
+            icon: "�",
+            slug: "tarbiyah",
+            order: 6,
           },
         ],
         skipDuplicates: true,
