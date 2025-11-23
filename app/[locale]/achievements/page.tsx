@@ -1,10 +1,10 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
 import { DashboardLayout } from "@/components/dashboard/layout";
 import { isAdmin } from "@/lib/admin";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { Award, ChevronRight, Home, Lock } from "lucide-react";
 import Link from "next/link";
-import { Award, Home, ChevronRight, Lock } from "lucide-react";
+import { redirect } from "next/navigation";
 
 export default async function AchievementsPage({
   params,
@@ -131,7 +131,7 @@ export default async function AchievementsPage({
                   {isEarned && userBadge && (
                     <p className="text-xs text-center text-primary-600 dark:text-primary-400 font-medium">
                       {isRTL ? "تم الحصول عليها في" : "Earned on"}{" "}
-                      {new Date(userBadge.earnedAt).toLocaleDateString(
+                      {new Date(userBadge.earnedDate).toLocaleDateString(
                         isRTL ? "ar-EG" : "en-US",
                         {
                           year: "numeric",
