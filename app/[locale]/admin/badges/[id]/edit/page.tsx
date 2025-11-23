@@ -1,11 +1,10 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/admin";
-import { prisma } from "@/lib/prisma";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { BadgeForm } from "@/components/admin/badge-form";
-import { notFound } from "next/navigation";
+import { requireAdmin } from "@/lib/admin";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
 
 export default async function EditBadgePage({
   params,
@@ -15,7 +14,7 @@ export default async function EditBadgePage({
   const { locale, id } = await params;
   const session = await auth();
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect(`/${locale}/login`);
   }
 
@@ -26,13 +25,22 @@ export default async function EditBadgePage({
     redirect(`/${locale}/admin`);
   }
 
-  const badge = await prisma.badge.findUnique({
+  const badgeData = await prisma.badge.findUnique({
     where: { id: parseInt(id) },
   });
 
-  if (!badge) {
+  if (!badgeData) {
     notFound();
   }
+
+  // Parse criteria JSON and transform to component format
+  const criteria = JSON.parse(badgeData.criteria);
+  const badge = {
+    ...badgeData,
+    icon: badgeData.iconUrl,
+    criteriaType: criteria.type || "lessons_completed",
+    criteriaValue: criteria.value || 10,
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -64,4 +72,3 @@ export default async function EditBadgePage({
     </div>
   );
 }
-

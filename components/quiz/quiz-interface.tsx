@@ -3,6 +3,8 @@
 import { Check, ChevronLeft, ChevronRight, Target, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { BadgeNotification } from "../badges/badge-notification";
+import { LevelUnlockModal } from "./level-unlock-modal";
 
 type Question = {
   id: number;

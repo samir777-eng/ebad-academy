@@ -13,7 +13,7 @@ type PageProps = {
 
 export default async function LessonPage({ params }: PageProps) {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect("/login");
   }
 

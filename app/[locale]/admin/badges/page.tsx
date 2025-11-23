@@ -1,10 +1,10 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/admin";
-import { prisma } from "@/lib/prisma";
-import Link from "next/link";
-import { ArrowLeft, Plus, Award, Users, Edit, Trash2 } from "lucide-react";
 import { DeleteBadgeButton } from "@/components/admin/delete-badge-button";
+import { requireAdmin } from "@/lib/admin";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { ArrowLeft, Award, Edit, Plus, Users } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function AdminBadgesPage({
   params,
@@ -14,7 +14,7 @@ export default async function AdminBadgesPage({
   const { locale } = await params;
   const session = await auth();
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect(`/${locale}/login`);
   }
 
@@ -28,15 +28,20 @@ export default async function AdminBadgesPage({
   // Get all badges with user counts
   const badges = await prisma.badge.findMany({
     include: {
-      users: true,
+      userBadges: true,
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { id: "desc" },
   });
 
-  const badgesWithStats = badges.map((badge) => ({
-    ...badge,
-    userCount: badge.users.length,
-  }));
+  const badgesWithStats = badges.map((badge) => {
+    const criteria = JSON.parse(badge.criteria);
+    return {
+      ...badge,
+      userCount: badge.userBadges.length,
+      criteriaType: criteria.type || "lessons_completed",
+      criteriaValue: criteria.value || 10,
+    };
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -100,7 +105,7 @@ export default async function AdminBadgesPage({
                 {/* Badge Icon */}
                 <div className="flex items-start justify-between mb-4">
                   <div className="w-16 h-16 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-3xl">
-                    {badge.icon || "🏆"}
+                    {badge.iconUrl || "🏆"}
                   </div>
                   <div className="flex items-center gap-2">
                     <Link
@@ -168,4 +173,3 @@ export default async function AdminBadgesPage({
     </div>
   );
 }
-

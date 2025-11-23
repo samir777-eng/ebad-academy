@@ -24,11 +24,11 @@ type Question = {
   questionTextEn: string;
   questionTextAr: string;
   type: string;
-  optionsEn: string;
-  optionsAr: string;
+  optionsEn: string | null;
+  optionsAr: string | null;
   correctAnswer: string;
-  explanationEn: string;
-  explanationAr: string;
+  explanationEn: string | null;
+  explanationAr: string | null;
   order: number;
 };
 
@@ -36,8 +36,8 @@ type Lesson = {
   id: number;
   titleEn: string;
   titleAr: string;
-  descriptionEn: string;
-  descriptionAr: string;
+  descriptionEn: string | null;
+  descriptionAr: string | null;
   videoUrlsEn: string | null;
   videoUrlsAr: string | null;
   pdfUrlEn?: string | null;
@@ -103,12 +103,12 @@ export function LessonForm({
       // Parse video URLs
       const videoUrlsEnArray = formData.videoUrlsEn
         .split("\n")
-        .map((url) => url.trim())
-        .filter((url) => url);
+        .map((url: string) => url.trim())
+        .filter((url: string) => url);
       const videoUrlsArArray = formData.videoUrlsAr
         .split("\n")
-        .map((url) => url.trim())
-        .filter((url) => url);
+        .map((url: string) => url.trim())
+        .filter((url: string) => url);
 
       const payload = {
         ...formData,
@@ -189,7 +189,7 @@ export function LessonForm({
       }
 
       const data = await response.json();
-      setFormData({ ...formData, pdfUrl: data.url });
+      setFormData((prev) => ({ ...prev, pdfUrl: data.url }));
       setPdfFileName(data.filename);
     } catch (err: any) {
       setError(err.message);

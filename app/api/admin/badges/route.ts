@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { requireAdmin } from "@/lib/admin";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/admin";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,7 +26,14 @@ export async function POST(req: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!nameEn || !nameAr || !descriptionEn || !descriptionAr || !icon || !criteriaType) {
+    if (
+      !nameEn ||
+      !nameAr ||
+      !descriptionEn ||
+      !descriptionAr ||
+      !icon ||
+      !criteriaType
+    ) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -40,9 +47,11 @@ export async function POST(req: NextRequest) {
         nameAr,
         descriptionEn,
         descriptionAr,
-        icon,
-        criteriaType,
-        criteriaValue: criteriaType === "manual" ? 0 : parseInt(criteriaValue),
+        iconUrl: icon,
+        criteria: JSON.stringify({
+          type: criteriaType,
+          value: criteriaType === "manual" ? 0 : parseInt(criteriaValue),
+        }),
       },
     });
 
@@ -55,4 +64,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-

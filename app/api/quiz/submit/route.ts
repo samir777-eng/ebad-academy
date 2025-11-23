@@ -52,13 +52,19 @@ export async function POST(request: Request) {
 
     // NOW check authentication after input validation
     const session = await auth();
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Convert lessonId to number
+    const lessonIdNum = parseInt(lessonId);
+    if (isNaN(lessonIdNum)) {
+      return NextResponse.json({ error: "Invalid lesson ID" }, { status: 400 });
     }
 
     // Get the lesson to verify it exists
     const lesson = await prisma.lesson.findUnique({
-      where: { id: lessonId },
+      where: { id: lessonIdNum },
       include: { questions: true },
     });
 

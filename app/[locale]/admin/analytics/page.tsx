@@ -1,10 +1,10 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/admin";
-import { prisma } from "@/lib/prisma";
-import Link from "next/link";
-import { ArrowLeft, Users, BookOpen, TrendingUp, Award } from "lucide-react";
 import { AnalyticsCharts } from "@/components/admin/analytics-charts";
+import { requireAdmin } from "@/lib/admin";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { ArrowLeft, Award, BookOpen, TrendingUp, Users } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function AdminAnalyticsPage({
   params,
@@ -14,7 +14,7 @@ export default async function AdminAnalyticsPage({
   const { locale } = await params;
   const session = await auth();
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect(`/${locale}/login`);
   }
 
@@ -54,7 +54,7 @@ export default async function AdminAnalyticsPage({
     }),
     prisma.lesson.findMany({
       include: {
-        progress: {
+        userProgress: {
           where: { completed: true },
         },
         quizAttempts: true,
@@ -71,14 +71,14 @@ export default async function AdminAnalyticsPage({
           },
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { attemptDate: "desc" },
       take: 100,
     }),
     prisma.level.findMany({
       include: {
         lessons: {
           include: {
-            progress: {
+            userProgress: {
               where: { completed: true },
             },
           },
@@ -89,17 +89,15 @@ export default async function AdminAnalyticsPage({
   ]);
 
   // Calculate statistics
-  const passRate = totalQuizAttempts > 0 
-    ? Math.round((passedQuizzes / totalQuizAttempts) * 100) 
-    : 0;
+  const passRate =
+    totalQuizAttempts > 0
+      ? Math.round((passedQuizzes / totalQuizAttempts) * 100)
+      : 0;
 
-  const activeUsers = users.filter(
-    (u) => u.progress.length > 0
-  ).length;
+  const activeUsers = users.filter((u) => u.progress.length > 0).length;
 
-  const avgLessonsPerUser = totalUsers > 0 
-    ? Math.round(completedLessons / totalUsers) 
-    : 0;
+  const avgLessonsPerUser =
+    totalUsers > 0 ? Math.round(completedLessons / totalUsers) : 0;
 
   // Popular lessons (most completed)
   const popularLessons = lessons
@@ -108,7 +106,7 @@ export default async function AdminAnalyticsPage({
       title: lesson.titleEn,
       level: lesson.level.levelNumber,
       branch: lesson.branch.nameEn,
-      completions: lesson.progress.length,
+      completions: lesson.userProgress.length,
       attempts: lesson.quizAttempts.length,
     }))
     .sort((a, b) => b.completions - a.completions)
@@ -118,12 +116,15 @@ export default async function AdminAnalyticsPage({
   const levelStats = levels.map((level) => {
     const totalLessonsInLevel = level.lessons.length;
     const totalCompletions = level.lessons.reduce(
-      (sum, lesson) => sum + lesson.progress.length,
+      (sum, lesson) => sum + lesson.userProgress.length,
       0
     );
-    const avgCompletionRate = totalLessonsInLevel > 0
-      ? Math.round((totalCompletions / (totalLessonsInLevel * totalUsers)) * 100)
-      : 0;
+    const avgCompletionRate =
+      totalLessonsInLevel > 0
+        ? Math.round(
+            (totalCompletions / (totalLessonsInLevel * totalUsers)) * 100
+          )
+        : 0;
 
     return {
       levelNumber: level.levelNumber,
@@ -172,7 +173,9 @@ export default async function AdminAnalyticsPage({
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
                 <Users className="w-5 h-5 text-white" />
               </div>
-              <span className="text-sm text-gray-600 dark:text-gray-400">Total Users</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                Total Users
+              </span>
             </div>
             <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
               {totalUsers}
@@ -187,13 +190,18 @@ export default async function AdminAnalyticsPage({
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-white" />
               </div>
-              <span className="text-sm text-gray-600 dark:text-gray-400">Active Users</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                Active Users
+              </span>
             </div>
             <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
               {activeUsers}
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {totalUsers > 0 ? Math.round((activeUsers / totalUsers) * 100) : 0}% of total
+              {totalUsers > 0
+                ? Math.round((activeUsers / totalUsers) * 100)
+                : 0}
+              % of total
             </p>
           </div>
 
@@ -202,7 +210,9 @@ export default async function AdminAnalyticsPage({
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
-              <span className="text-sm text-gray-600 dark:text-gray-400">Avg Lessons/User</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                Avg Lessons/User
+              </span>
             </div>
             <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
               {avgLessonsPerUser}
@@ -217,7 +227,9 @@ export default async function AdminAnalyticsPage({
               <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center">
                 <Award className="w-5 h-5 text-white" />
               </div>
-              <span className="text-sm text-gray-600 dark:text-gray-400">Quiz Pass Rate</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                Quiz Pass Rate
+              </span>
             </div>
             <p className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
               {passRate}%
@@ -231,7 +243,10 @@ export default async function AdminAnalyticsPage({
         {/* Charts Component */}
         <AnalyticsCharts
           users={users}
-          quizAttempts={quizAttempts}
+          quizAttempts={quizAttempts.map((attempt) => ({
+            ...attempt,
+            createdAt: attempt.attemptDate,
+          }))}
           levelStats={levelStats}
           popularLessons={popularLessons}
         />
@@ -239,4 +254,3 @@ export default async function AdminAnalyticsPage({
     </div>
   );
 }
-

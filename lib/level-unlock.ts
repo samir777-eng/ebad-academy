@@ -173,25 +173,25 @@ export async function checkAndUnlockNextLevel(
     const { checkAndAwardBadges } = await import("@/lib/badge-checker");
     await checkAndAwardBadges(userId);
 
-    // Send email notification (async, don't wait)
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { name: true, email: true },
-    });
+    // TODO: Send email notification (async, don't wait)
+    // const user = await prisma.user.findUnique({
+    //   where: { id: userId },
+    //   select: { name: true, email: true },
+    // });
 
-    if (user) {
-      sendEmail(
-        user.email,
-        createLevelUnlockedEmail({
-          name: user.name || "Student",
-          email: user.email,
-          levelNumber: nextLevel.levelNumber,
-          levelName: nextLevel.nameEn,
-        })
-      ).catch((err) =>
-        console.error("Failed to send level unlock email:", err)
-      );
-    }
+    // if (user) {
+    //   sendEmail(
+    //     user.email,
+    //     createLevelUnlockedEmail({
+    //       name: user.name || "Student",
+    //       email: user.email,
+    //       levelNumber: nextLevel.levelNumber,
+    //       levelName: nextLevel.nameEn,
+    //     })
+    //   ).catch((err) =>
+    //     console.error("Failed to send level unlock email:", err)
+    //   );
+    // }
 
     return {
       levelUnlocked: true,

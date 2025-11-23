@@ -1,11 +1,11 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { prisma } from "@/lib/prisma";
-import { LeaderboardTable } from "@/components/leaderboard/leaderboard-table";
 import { DashboardLayout } from "@/components/dashboard/layout";
+import { LeaderboardTable } from "@/components/leaderboard/leaderboard-table";
 import { isAdmin } from "@/lib/admin";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 import { Trophy } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function LeaderboardPage({
   params,
@@ -15,7 +15,7 @@ export default async function LeaderboardPage({
   const { locale } = await params;
   const session = await auth();
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect(`/${locale}/login`);
   }
 
@@ -67,7 +67,7 @@ export default async function LeaderboardPage({
         id: user.id,
         name: user.name || "Anonymous",
         email: user.email,
-        image: user.image,
+        image: null,
         completedLessons,
         passedQuizzes,
         badgesEarned,
@@ -83,7 +83,7 @@ export default async function LeaderboardPage({
 
   // Find current user's rank
   const currentUserRank =
-    leaderboardData.find((u) => u.id === session.user.id)?.rank || 0;
+    leaderboardData.find((u) => u.id === session.user!.id)?.rank || 0;
 
   return (
     <DashboardLayout locale={locale} isAdmin={admin}>
@@ -144,7 +144,7 @@ export default async function LeaderboardPage({
                       {isRTL ? "إجمالي النقاط" : "Total Points"}
                     </p>
                     <p className="text-3xl font-bold">
-                      {leaderboardData.find((u) => u.id === session.user.id)
+                      {leaderboardData.find((u) => u.id === session.user!.id)
                         ?.totalScore || 0}
                     </p>
                   </div>

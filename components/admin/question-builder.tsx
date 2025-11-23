@@ -14,11 +14,11 @@ type Question = {
   questionTextEn: string;
   questionTextAr: string;
   type: string;
-  optionsEn: string;
-  optionsAr: string;
+  optionsEn: string | null;
+  optionsAr: string | null;
   correctAnswer: string;
-  explanationEn: string;
-  explanationAr: string;
+  explanationEn: string | null;
+  explanationAr: string | null;
   order: number;
 };
 
@@ -461,7 +461,7 @@ export function QuestionBuilder({ questions, onChange }: QuestionBuilderProps) {
                       </label>
                       <textarea
                         rows={3}
-                        value={question.explanationEn}
+                        value={question.explanationEn || ""}
                         onChange={(e) =>
                           updateQuestion(index, "explanationEn", e.target.value)
                         }
@@ -475,7 +475,7 @@ export function QuestionBuilder({ questions, onChange }: QuestionBuilderProps) {
                       </label>
                       <textarea
                         rows={3}
-                        value={question.explanationAr}
+                        value={question.explanationAr || ""}
                         onChange={(e) =>
                           updateQuestion(index, "explanationAr", e.target.value)
                         }

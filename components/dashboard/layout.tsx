@@ -31,7 +31,7 @@ export function DashboardLayout({
           } transition-all duration-300`}
         >
           {/* Header */}
-          <DashboardHeader locale={locale} isRTL={isRTL} />
+          <DashboardHeader locale={locale} />
 
           {/* Page Content */}
           <main className="flex-1 overflow-y-auto p-6">{children}</main>

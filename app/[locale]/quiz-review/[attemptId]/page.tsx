@@ -20,7 +20,7 @@ export default async function QuizReviewPage({
   const isRTL = locale === "ar";
 
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect(`/${locale}/login`);
   }
 

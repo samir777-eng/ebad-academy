@@ -1,8 +1,6 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/admin";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import Link from "next/link";
 import {
   ArrowLeft,
   Award,
@@ -10,7 +8,8 @@ import {
   CheckCircle,
   TrendingUp,
 } from "lucide-react";
-import { notFound } from "next/navigation";
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
 
 export default async function UserDetailPage({
   params,
@@ -20,7 +19,7 @@ export default async function UserDetailPage({
   const { locale, id } = await params;
   const session = await auth();
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect(`/${locale}/login`);
   }
 
@@ -209,7 +208,7 @@ export default async function UserDetailPage({
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
-                      {new Date(attempt.createdAt).toLocaleDateString()}
+                      {new Date(attempt.attemptDate).toLocaleDateString()}
                     </td>
                   </tr>
                 ))}

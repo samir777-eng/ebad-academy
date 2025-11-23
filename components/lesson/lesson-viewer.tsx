@@ -14,6 +14,7 @@ import {
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import React, { useState } from "react";
+import { ActionItems } from "./action-items";
 import { LessonNotes } from "./lesson-notes";
 import { MindMapViewer } from "./mind-map-viewer";
 import { VideoTimestamps } from "./video-timestamps";

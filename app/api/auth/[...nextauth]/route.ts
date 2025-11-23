@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 const { GET: originalGET, POST: originalPOST } = handlers;
 
 // Wrap POST handler with rate limiting for login attempts
-async function POST(req: NextRequest, context: any) {
+async function POST(req: NextRequest) {
   // Apply rate limiting: max 5 login attempts per 15 minutes per IP
   const rateLimitResult = checkRateLimit(req, {
     maxRequests: 5,
@@ -33,7 +33,7 @@ async function POST(req: NextRequest, context: any) {
   }
 
   // Call the original handler
-  return originalPOST(req, context);
+  return originalPOST(req);
 }
 
 // Export GET as-is and POST with rate limiting

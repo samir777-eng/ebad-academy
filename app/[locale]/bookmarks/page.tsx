@@ -10,7 +10,7 @@ type PageProps = {
 
 export default async function BookmarksPage({ params }: PageProps) {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect("/login");
   }
 

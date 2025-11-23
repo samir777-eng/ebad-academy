@@ -7,7 +7,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   // Note: PrismaAdapter is not compatible with CredentialsProvider
   // adapter: PrismaAdapter(prisma),
   trustHost: true, // Fix CSRF issues in development/testing
-  skipCSRFCheck: true, // ALWAYS skip CSRF for development and testing
   providers: [
     CredentialsProvider({
       name: "credentials",

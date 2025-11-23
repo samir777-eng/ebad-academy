@@ -33,16 +33,18 @@ export async function checkAndAwardBadges(userId: string): Promise<number[]> {
       return [];
     }
 
-    // Get all auto-award badges (not manual)
-    const badges = await prisma.badge.findMany({
-      where: {
-        criteriaType: { not: "manual" },
-      },
-    });
+    // Get all badges
+    const badges = await prisma.badge.findMany();
 
     const newlyAwardedBadgeIds: number[] = [];
 
     for (const badge of badges) {
+      // Parse criteria JSON
+      const criteria = JSON.parse(badge.criteria);
+
+      // Skip manual badges
+      if (criteria.type === "manual") continue;
+
       // Check if user already has this badge
       const alreadyHas = user.badges.some((ub) => ub.badgeId === badge.id);
       if (alreadyHas) continue;
@@ -50,17 +52,17 @@ export async function checkAndAwardBadges(userId: string): Promise<number[]> {
       let shouldAward = false;
 
       // Check criteria based on type
-      switch (badge.criteriaType) {
+      switch (criteria.type) {
         case "lessons_completed":
           // Count completed lessons
-          shouldAward = user.progress.length >= badge.criteriaValue;
+          shouldAward = user.progress.length >= criteria.value;
           break;
 
         case "level_completed":
           // Check if specific level is unlocked
           // Level is considered "completed" if the next level is unlocked
           // Or if it's the last level and all lessons are completed
-          const targetLevel = badge.criteriaValue;
+          const targetLevel = criteria.value;
           const nextLevel = targetLevel + 1;
 
           // Check if next level is unlocked (meaning target level is completed)
@@ -81,7 +83,7 @@ export async function checkAndAwardBadges(userId: string): Promise<number[]> {
 
         case "quizzes_passed":
           // Count passed quizzes (score >= 60%)
-          shouldAward = user.quizAttempts.length >= badge.criteriaValue;
+          shouldAward = user.quizAttempts.length >= criteria.value;
           break;
 
         case "perfect_score":
@@ -89,7 +91,7 @@ export async function checkAndAwardBadges(userId: string): Promise<number[]> {
           const perfectScores = user.quizAttempts.filter(
             (attempt) => attempt.score === 100
           );
-          shouldAward = perfectScores.length >= badge.criteriaValue;
+          shouldAward = perfectScores.length >= criteria.value;
           break;
 
         default:
@@ -107,17 +109,17 @@ export async function checkAndAwardBadges(userId: string): Promise<number[]> {
         });
         newlyAwardedBadgeIds.push(badge.id);
 
-        // Send email notification (async, don't wait)
-        sendEmail(
-          user.email,
-          createBadgeEarnedEmail({
-            name: user.name || "Student",
-            email: user.email,
-            badgeName: badge.nameEn,
-            badgeDescription: badge.descriptionEn,
-            badgeIcon: badge.icon,
-          })
-        ).catch((err) => console.error("Failed to send badge email:", err));
+        // TODO: Send email notification (async, don't wait)
+        // sendEmail(
+        //   user.email,
+        //   createBadgeEarnedEmail({
+        //     name: user.name || "Student",
+        //     email: user.email,
+        //     badgeName: badge.nameEn,
+        //     badgeDescription: badge.descriptionEn,
+        //     badgeIcon: badge.iconUrl,
+        //   })
+        // ).catch((err) => console.error("Failed to send badge email:", err));
       }
     }
 

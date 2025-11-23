@@ -12,7 +12,7 @@ type PageProps = {
 
 export default async function ProfilePage({ params }: PageProps) {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user?.id) {
     redirect("/login");
   }
 
@@ -82,7 +82,7 @@ export default async function ProfilePage({ params }: PageProps) {
           descriptionAr: ub.badge.descriptionAr,
           descriptionEn: ub.badge.descriptionEn,
           iconUrl: ub.badge.iconUrl,
-          earnedAt: ub.earnedAt,
+          earnedAt: ub.earnedDate,
         }))}
         locale={locale}
       />
