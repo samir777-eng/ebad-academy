@@ -415,21 +415,30 @@ export function LessonViewer({
           )}
 
           {activeTab === "pdf" && pdfUrl && (
-            <div className="text-center py-12">
-              <FileText className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                {isRTL
-                  ? "عارض PDF سيتم إضافته قريباً"
-                  : "PDF viewer coming soon"}
-              </p>
-              <a
-                href={pdfUrl}
-                download
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300"
-              >
-                <Download className="h-5 w-5" />
-                <span>{isRTL ? "تحميل PDF" : "Download PDF"}</span>
-              </a>
+            <div className="space-y-4">
+              {/* PDF Viewer Header */}
+              <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {isRTL ? "ملف PDF" : "PDF Document"}
+                </h3>
+                <a
+                  href={pdfUrl}
+                  download
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white font-semibold hover:shadow-lg hover:scale-105 transition-all duration-300"
+                >
+                  <Download className="h-5 w-5" />
+                  <span>{isRTL ? "تحميل" : "Download"}</span>
+                </a>
+              </div>
+
+              {/* PDF Embed Viewer */}
+              <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-lg">
+                <iframe
+                  src={pdfUrl}
+                  className="w-full h-[800px]"
+                  title={isRTL ? "عارض PDF" : "PDF Viewer"}
+                />
+              </div>
             </div>
           )}
 

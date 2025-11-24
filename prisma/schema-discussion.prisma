@@ -1,0 +1,74 @@
+// Discussion Forum Models
+// Add these to your main schema.prisma file
+
+model Discussion {
+  id          Int      @id @default(autoincrement())
+  lessonId    Int
+  userId      String
+  title       String
+  content     String   @db.Text
+  isPinned    Boolean  @default(false)
+  isResolved  Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replies     DiscussionReply[]
+  likes       DiscussionLike[]
+
+  @@index([lessonId])
+  @@index([userId])
+}
+
+model DiscussionReply {
+  id            Int      @id @default(autoincrement())
+  discussionId  Int
+  userId        String
+  content       String   @db.Text
+  isAnswer      Boolean  @default(false) // Mark as accepted answer
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  discussion    Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes         DiscussionReplyLike[]
+
+  @@index([discussionId])
+  @@index([userId])
+}
+
+model DiscussionLike {
+  id            Int      @id @default(autoincrement())
+  discussionId  Int
+  userId        String
+  createdAt     DateTime @default(now())
+
+  discussion    Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([discussionId, userId])
+}
+
+model DiscussionReplyLike {
+  id       Int      @id @default(autoincrement())
+  replyId  Int
+  userId   String
+  createdAt DateTime @default(now())
+
+  reply    DiscussionReply @relation(fields: [replyId], references: [id], onDelete: Cascade)
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([replyId, userId])
+}
+
+// Add these relations to existing models:
+// In User model, add:
+//   discussions         Discussion[]
+//   discussionReplies   DiscussionReply[]
+//   discussionLikes     DiscussionLike[]
+//   discussionReplyLikes DiscussionReplyLike[]
+
+// In Lesson model, add:
+//   discussions         Discussion[]
+
