@@ -4,6 +4,7 @@
   "description": "Ebad Academy - Islamic Education Platform",
   "scripts": {
     "dev": "next dev",
+    "dev:setup": "npm run db:local:setup && npm run dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -12,6 +13,8 @@
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
+    "db:local:setup": "prisma db push --skip-generate && node scripts/seed-local-db.js",
+    "db:local:reset": "rm -f dev.db dev.db-journal && npm run db:local:setup",
     "test": "playwright test",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
