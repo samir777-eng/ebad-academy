@@ -106,12 +106,26 @@ export async function GET() {
       });
     }
 
+    // Make samireldirini@gmail.com an admin
+    const adminEmail = "samireldirini@gmail.com";
+    const adminUser = await prisma.user.findUnique({
+      where: { email: adminEmail },
+    });
+
+    if (adminUser && adminUser.role !== "admin") {
+      await prisma.user.update({
+        where: { email: adminEmail },
+        data: { role: "admin" },
+      });
+    }
+
     return NextResponse.json({
       success: true,
       message: "Database initialized successfully!",
       data: {
         levels: await prisma.level.count(),
         branches: await prisma.branch.count(),
+        adminSet: adminUser ? true : false,
       },
     });
   } catch (error) {
