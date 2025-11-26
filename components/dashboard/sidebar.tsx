@@ -63,21 +63,30 @@ export function DashboardSidebar({
   locale,
   isRTL,
   isAdmin,
+  isSidebarOpen,
+  setIsSidebarOpen,
 }: {
   locale: string;
   isRTL: boolean;
   isAdmin?: boolean;
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: (open: boolean) => void;
 }) {
   const t = useTranslations("dashboard.nav");
   const pathname = usePathname();
 
   return (
     <aside
-      className={`fixed ${
-        isRTL ? "right-0" : "left-0"
-      } top-0 z-40 h-screen w-64 bg-white dark:bg-gray-900 border-${
-        isRTL ? "l" : "r"
-      } border-gray-200 dark:border-gray-800`}
+      className={cn(
+        "fixed top-0 z-40 h-screen w-64 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 transition-transform duration-300",
+        isRTL ? "right-0 border-l" : "left-0 border-r",
+        // Mobile: slide in/out, Desktop: always visible
+        isSidebarOpen
+          ? "translate-x-0"
+          : isRTL
+          ? "translate-x-full lg:translate-x-0"
+          : "-translate-x-full lg:translate-x-0"
+      )}
     >
       <div className="flex h-full flex-col">
         {/* Logo - Clean and Professional */}
