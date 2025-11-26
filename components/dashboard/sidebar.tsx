@@ -81,9 +81,11 @@ export function DashboardSidebar({
 
   // Load collapse state from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem("sidebar-collapsed");
-    if (saved !== null) {
-      setIsCollapsed(saved === "true");
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("sidebar-collapsed");
+      if (saved !== null) {
+        setIsCollapsed(saved === "true");
+      }
     }
   }, []);
 
