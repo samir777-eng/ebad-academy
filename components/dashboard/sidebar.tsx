@@ -130,16 +130,15 @@ export function DashboardSidebar({
             <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary-600 to-secondary-600 text-white shadow-md group-hover:shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
               <GraduationCap className="h-6 w-6" />
             </div>
-            {!isCollapsed && (
-              <div>
-                <span className="text-lg font-bold text-gray-900 dark:text-white">
-                  {locale === "ar" ? "أكاديمية عباد" : "Ebad Academy"}
-                </span>
-                <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                  {locale === "ar" ? "رحلة التعلم" : "Learning Journey"}
-                </div>
+            {/* Show text on mobile always, hide on desktop when collapsed */}
+            <div className={cn(isCollapsed && "lg:hidden")}>
+              <span className="text-lg font-bold text-gray-900 dark:text-white">
+                {locale === "ar" ? "أكاديمية عباد" : "Ebad Academy"}
+              </span>
+              <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                {locale === "ar" ? "رحلة التعلم" : "Learning Journey"}
               </div>
-            )}
+            </div>
           </Link>
 
           {/* Collapse Button - Desktop Only */}
@@ -255,15 +254,18 @@ export function DashboardSidebar({
                       !isActive && "group-hover/item:scale-110"
                     )}
                   />
-                  {!isCollapsed && (
-                    <>
-                      <span className="text-sm">{t(item.key)}</span>
-                      {isActive && (
-                        <div
-                          className={`ml-auto h-2 w-2 rounded-full bg-gradient-to-r ${item.color} animate-pulse`}
-                        ></div>
+                  {/* Show text on mobile always, hide on desktop when collapsed */}
+                  <span className={cn("text-sm", isCollapsed && "lg:hidden")}>
+                    {t(item.key)}
+                  </span>
+                  {isActive && (
+                    <div
+                      className={cn(
+                        "ml-auto h-2 w-2 rounded-full bg-gradient-to-r animate-pulse",
+                        item.color,
+                        isCollapsed && "lg:hidden"
                       )}
-                    </>
+                    ></div>
                   )}
                 </div>
               </Link>
