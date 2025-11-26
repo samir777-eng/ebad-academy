@@ -20,11 +20,14 @@ export function DashboardLayout({
 
   // Sync collapse state from sidebar (via localStorage)
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
     const handleStorage = () => {
-      const saved = localStorage.getItem("sidebar-collapsed");
-      setIsCollapsed(saved === "true");
+      try {
+        const saved = localStorage.getItem("sidebar-collapsed");
+        setIsCollapsed(saved === "true");
+      } catch (error) {
+        // localStorage not available
+        console.error("localStorage not available:", error);
+      }
     };
 
     // Initial load

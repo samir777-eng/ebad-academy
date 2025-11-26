@@ -81,11 +81,14 @@ export function DashboardSidebar({
 
   // Load collapse state from localStorage on mount
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    try {
       const saved = localStorage.getItem("sidebar-collapsed");
       if (saved !== null) {
         setIsCollapsed(saved === "true");
       }
+    } catch (error) {
+      // localStorage not available (SSR)
+      console.error("localStorage not available:", error);
     }
   }, []);
 
@@ -103,15 +106,15 @@ export function DashboardSidebar({
       className={cn(
         "fixed top-0 z-40 h-screen bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 transition-all duration-300",
         isRTL ? "right-0 border-l" : "left-0 border-r",
-        // Width changes based on collapse state (desktop only)
-        isCollapsed ? "lg:w-20" : "lg:w-64",
-        "w-64", // Always full width on mobile
         // Mobile: slide in/out, Desktop: always visible
         isSidebarOpen
           ? "translate-x-0"
           : isRTL
           ? "translate-x-full lg:translate-x-0"
-          : "-translate-x-full lg:translate-x-0"
+          : "-translate-x-full lg:translate-x-0",
+        // Width changes based on collapse state (desktop only)
+        "w-64", // Mobile width
+        isCollapsed ? "lg:w-20" : "lg:w-64" // Desktop width
       )}
     >
       <div className="flex h-full flex-col">
