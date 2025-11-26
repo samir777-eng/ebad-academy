@@ -30,7 +30,7 @@ const navigationItems = [
   },
   {
     key: "spiritualProgress",
-    href: "/spiritual-progress",
+    href: "/dashboard/spiritual-progress",
     icon: Heart,
     color: "from-rose-500 to-pink-500",
   },

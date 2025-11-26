@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Circle } from "lucide-react";
+import { Circle } from "lucide-react";
 
 type SpiritualProgressCalendarProps = {
   progress: any[];
@@ -61,55 +61,61 @@ export function SpiritualProgressCalendar({
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-7 gap-2">
+      {/* Responsive grid: 5 cols on mobile, 7 on tablet, 10 on desktop */}
+      <div className="grid grid-cols-5 sm:grid-cols-7 lg:grid-cols-10 gap-2">
         {days.map((day, index) => {
           const dayProgress = getProgressForDate(day);
           const completionLevel = getCompletionLevel(dayProgress);
-          const isToday =
-            day.toDateString() === new Date().toDateString();
-          const isSelected =
-            day.toDateString() === selectedDate.toDateString();
+          const isToday = day.toDateString() === new Date().toDateString();
+          const isSelected = day.toDateString() === selectedDate.toDateString();
 
           return (
             <button
               key={index}
               onClick={() => onDateSelect(day)}
-              className={`aspect-square p-2 rounded-xl border-2 transition-all ${
+              className={`aspect-square p-1 sm:p-2 rounded-lg sm:rounded-xl border-2 transition-all hover:scale-105 ${
                 isSelected
-                  ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20"
+                  ? "border-primary-500 bg-primary-50 dark:bg-primary-900/20 shadow-lg"
                   : isToday
                   ? "border-secondary-500 bg-secondary-50 dark:bg-secondary-900/20"
-                  : "border-gray-200 dark:border-gray-700 hover:border-primary-300"
+                  : "border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600"
               }`}
+              title={`${day.toLocaleDateString(
+                locale === "ar" ? "ar-EG" : "en-US",
+                {
+                  month: "short",
+                  day: "numeric",
+                }
+              )} - ${Math.round(completionLevel)}%`}
             >
-              <div className="flex flex-col items-center justify-center h-full">
-                <span className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+              <div className="flex flex-col items-center justify-center h-full gap-0.5 sm:gap-1">
+                <span className="text-[10px] sm:text-xs font-medium text-gray-600 dark:text-gray-400">
                   {day.getDate()}
                 </span>
                 {completionLevel > 0 ? (
-                  <div className="relative w-8 h-8">
-                    <svg className="w-8 h-8 transform -rotate-90">
+                  <div className="relative w-6 h-6 sm:w-8 sm:h-8">
+                    <svg className="w-full h-full transform -rotate-90">
                       <circle
-                        cx="16"
-                        cy="16"
-                        r="14"
+                        cx="50%"
+                        cy="50%"
+                        r="40%"
                         stroke="currentColor"
-                        strokeWidth="3"
+                        strokeWidth="2"
                         fill="none"
                         className="text-gray-200 dark:text-gray-700"
                       />
                       <circle
-                        cx="16"
-                        cy="16"
-                        r="14"
+                        cx="50%"
+                        cy="50%"
+                        r="40%"
                         stroke="currentColor"
-                        strokeWidth="3"
+                        strokeWidth="2"
                         fill="none"
-                        strokeDasharray={`${2 * Math.PI * 14}`}
+                        strokeDasharray={`${2 * Math.PI * 0.4 * 24}`}
                         strokeDashoffset={`${
-                          2 * Math.PI * 14 * (1 - completionLevel / 100)
+                          2 * Math.PI * 0.4 * 24 * (1 - completionLevel / 100)
                         }`}
-                        className={`${
+                        className={`transition-all ${
                           completionLevel >= 80
                             ? "text-green-500"
                             : completionLevel >= 50
@@ -118,12 +124,12 @@ export function SpiritualProgressCalendar({
                         }`}
                       />
                     </svg>
-                    <span className="absolute inset-0 flex items-center justify-center text-xs font-bold">
+                    <span className="absolute inset-0 flex items-center justify-center text-[8px] sm:text-xs font-bold text-gray-700 dark:text-gray-300">
                       {Math.round(completionLevel)}
                     </span>
                   </div>
                 ) : (
-                  <Circle className="w-8 h-8 text-gray-300 dark:text-gray-600" />
+                  <Circle className="w-6 h-6 sm:w-8 sm:h-8 text-gray-300 dark:text-gray-600" />
                 )}
               </div>
             </button>
@@ -131,28 +137,28 @@ export function SpiritualProgressCalendar({
         })}
       </div>
 
-      {/* Legend */}
-      <div className="flex items-center justify-center gap-6 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-green-500" />
+      {/* Legend - Responsive */}
+      <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-green-500" />
           <span className="text-gray-600 dark:text-gray-400">
-            {isRTL ? "80%+" : "80%+"}
+            {isRTL ? "٪80+" : "80%+"}
           </span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-yellow-500" />
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-yellow-500" />
           <span className="text-gray-600 dark:text-gray-400">
-            {isRTL ? "50-79%" : "50-79%"}
+            {isRTL ? "٪50-79" : "50-79%"}
           </span>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-orange-500" />
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-orange-500" />
           <span className="text-gray-600 dark:text-gray-400">
-            {isRTL ? "1-49%" : "1-49%"}
+            {isRTL ? "٪1-49" : "1-49%"}
           </span>
         </div>
-        <div className="flex items-center gap-2">
-          <Circle className="w-4 h-4 text-gray-300" />
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <Circle className="w-3 h-3 sm:w-4 sm:h-4 text-gray-300" />
           <span className="text-gray-600 dark:text-gray-400">
             {isRTL ? "لا يوجد" : "None"}
           </span>
@@ -161,4 +167,3 @@ export function SpiritualProgressCalendar({
     </div>
   );
 }
-
