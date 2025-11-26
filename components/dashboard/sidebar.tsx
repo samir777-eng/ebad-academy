@@ -8,6 +8,7 @@ import {
   Home,
   Layers,
   Settings,
+  Shield,
   Trophy,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -278,23 +279,22 @@ export function DashboardSidebar({
           <div className="px-4 pb-4">
             <Link
               href={`/${locale}/admin`}
-              className="block bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl px-4 py-3 font-medium text-sm hover:shadow-lg transition-all duration-200 hover:scale-105"
+              className={cn(
+                "flex items-center gap-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl px-4 py-3 font-medium text-sm hover:shadow-lg transition-all duration-200 hover:scale-105",
+                isCollapsed && "lg:justify-center lg:px-2"
+              )}
+              title={
+                isCollapsed
+                  ? locale === "ar"
+                    ? "لوحة الإدارة"
+                    : "Admin Panel"
+                  : undefined
+              }
             >
-              <div className="flex items-center gap-2">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-                <span>{locale === "ar" ? "لوحة الإدارة" : "Admin Panel"}</span>
-              </div>
+              <Shield className="h-5 w-5 flex-shrink-0" />
+              <span className={cn(isCollapsed && "lg:hidden")}>
+                {locale === "ar" ? "لوحة الإدارة" : "Admin Panel"}
+              </span>
             </Link>
           </div>
         )}
