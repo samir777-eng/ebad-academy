@@ -106,15 +106,14 @@ export function DashboardSidebar({
       className={cn(
         "fixed top-0 z-40 h-screen bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 transition-all duration-300",
         isRTL ? "right-0 border-l" : "left-0 border-r",
+        // Width - responsive
+        "w-64",
+        isCollapsed && "lg:w-20",
         // Mobile: slide in/out, Desktop: always visible
-        isSidebarOpen
-          ? "translate-x-0"
-          : isRTL
-          ? "translate-x-full lg:translate-x-0"
-          : "-translate-x-full lg:translate-x-0",
-        // Width changes based on collapse state (desktop only)
-        "w-64", // Mobile width
-        isCollapsed ? "lg:w-20" : "lg:w-64" // Desktop width
+        isSidebarOpen && "translate-x-0",
+        !isSidebarOpen && isRTL && "translate-x-full",
+        !isSidebarOpen && !isRTL && "-translate-x-full",
+        !isSidebarOpen && "lg:translate-x-0"
       )}
     >
       <div className="flex h-full flex-col">
