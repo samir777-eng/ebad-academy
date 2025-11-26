@@ -48,7 +48,7 @@ const navigationItems = [
   },
   {
     key: "bookmarks",
-    href: "/bookmarks",
+    href: "/dashboard/bookmarks",
     icon: Bookmark,
     color: "from-amber-500 to-yellow-500",
   },
