@@ -13,6 +13,7 @@ import {
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const navigationItems = [
   {
@@ -75,11 +76,34 @@ export function DashboardSidebar({
   const t = useTranslations("dashboard.nav");
   const pathname = usePathname();
 
+  // Collapse state for desktop (persisted in localStorage)
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Load collapse state from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("sidebar-collapsed");
+    if (saved !== null) {
+      setIsCollapsed(saved === "true");
+    }
+  }, []);
+
+  // Save collapse state to localStorage and notify layout
+  const toggleCollapse = () => {
+    const newState = !isCollapsed;
+    setIsCollapsed(newState);
+    localStorage.setItem("sidebar-collapsed", String(newState));
+    // Dispatch custom event to notify layout component
+    window.dispatchEvent(new Event("sidebar-collapse-change"));
+  };
+
   return (
     <aside
       className={cn(
-        "fixed top-0 z-40 h-screen w-64 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 transition-transform duration-300",
+        "fixed top-0 z-40 h-screen bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 transition-all duration-300",
         isRTL ? "right-0 border-l" : "left-0 border-r",
+        // Width changes based on collapse state (desktop only)
+        isCollapsed ? "lg:w-20" : "lg:w-64",
+        "w-64", // Always full width on mobile
         // Mobile: slide in/out, Desktop: always visible
         isSidebarOpen
           ? "translate-x-0"
@@ -90,24 +114,113 @@ export function DashboardSidebar({
     >
       <div className="flex h-full flex-col">
         {/* Logo - Clean and Professional */}
-        <div className="flex h-20 items-center px-6 border-b border-gray-200 dark:border-gray-800">
+        <div className="flex h-20 items-center justify-between px-6 border-b border-gray-200 dark:border-gray-800">
           <Link
             href={`/${locale}/dashboard`}
-            className="flex items-center gap-3 group"
+            className={cn(
+              "flex items-center gap-3 group",
+              isCollapsed && "lg:justify-center"
+            )}
           >
             {/* Icon Container with hover animation */}
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-primary-600 to-secondary-600 text-white shadow-md group-hover:shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+            <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary-600 to-secondary-600 text-white shadow-md group-hover:shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
               <GraduationCap className="h-6 w-6" />
             </div>
-            <div>
-              <span className="text-lg font-bold text-gray-900 dark:text-white">
-                {locale === "ar" ? "أكاديمية عباد" : "Ebad Academy"}
-              </span>
-              <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                {locale === "ar" ? "رحلة التعلم" : "Learning Journey"}
+            {!isCollapsed && (
+              <div>
+                <span className="text-lg font-bold text-gray-900 dark:text-white">
+                  {locale === "ar" ? "أكاديمية عباد" : "Ebad Academy"}
+                </span>
+                <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+                  {locale === "ar" ? "رحلة التعلم" : "Learning Journey"}
+                </div>
               </div>
-            </div>
+            )}
           </Link>
+
+          {/* Collapse Button - Desktop Only */}
+          <button
+            onClick={toggleCollapse}
+            className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            aria-label={
+              isCollapsed
+                ? locale === "ar"
+                  ? "توسيع"
+                  : "Expand"
+                : locale === "ar"
+                ? "طي"
+                : "Collapse"
+            }
+            title={
+              isCollapsed
+                ? locale === "ar"
+                  ? "توسيع الشريط الجانبي"
+                  : "Expand sidebar"
+                : locale === "ar"
+                ? "طي الشريط الجانبي"
+                : "Collapse sidebar"
+            }
+          >
+            {isRTL ? (
+              isCollapsed ? (
+                <svg
+                  className="w-5 h-5 text-gray-600 dark:text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  className="w-5 h-5 text-gray-600 dark:text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              )
+            ) : isCollapsed ? (
+              <svg
+                className="w-5 h-5 text-gray-600 dark:text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="w-5 h-5 text-gray-600 dark:text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            )}
+          </button>
         </div>
 
         {/* Navigation - Clean and Professional */}
@@ -127,8 +240,10 @@ export function DashboardSidebar({
                     "flex items-center gap-3 rounded-xl px-4 py-3 font-medium transition-all duration-200 group/item",
                     isActive
                       ? "bg-primary-50 dark:bg-primary-950/30 text-primary-700 dark:text-primary-400 shadow-sm"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:translate-x-1"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:translate-x-1",
+                    isCollapsed && "lg:justify-center lg:px-2"
                   )}
+                  title={isCollapsed ? t(item.key) : undefined}
                 >
                   <Icon
                     className={cn(
@@ -136,11 +251,15 @@ export function DashboardSidebar({
                       !isActive && "group-hover/item:scale-110"
                     )}
                   />
-                  <span className="text-sm">{t(item.key)}</span>
-                  {isActive && (
-                    <div
-                      className={`ml-auto h-2 w-2 rounded-full bg-gradient-to-r ${item.color} animate-pulse`}
-                    ></div>
+                  {!isCollapsed && (
+                    <>
+                      <span className="text-sm">{t(item.key)}</span>
+                      {isActive && (
+                        <div
+                          className={`ml-auto h-2 w-2 rounded-full bg-gradient-to-r ${item.color} animate-pulse`}
+                        ></div>
+                      )}
+                    </>
                   )}
                 </div>
               </Link>

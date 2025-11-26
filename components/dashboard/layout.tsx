@@ -1,7 +1,7 @@
 "use client";
 
 import { Providers } from "@/components/providers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DashboardHeader } from "./header";
 import { DashboardSidebar } from "./sidebar";
 
@@ -16,6 +16,28 @@ export function DashboardLayout({
 }) {
   const isRTL = locale === "ar";
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Sync collapse state from sidebar (via localStorage)
+  useEffect(() => {
+    const handleStorage = () => {
+      const saved = localStorage.getItem("sidebar-collapsed");
+      setIsCollapsed(saved === "true");
+    };
+
+    // Initial load
+    handleStorage();
+
+    // Listen for changes
+    window.addEventListener("storage", handleStorage);
+    // Custom event for same-tab updates
+    window.addEventListener("sidebar-collapse-change", handleStorage);
+
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("sidebar-collapse-change", handleStorage);
+    };
+  }, []);
 
   return (
     <Providers>
@@ -42,9 +64,15 @@ export function DashboardLayout({
 
         {/* Main Content */}
         <div
-          className={`flex flex-1 flex-col lg:${
-            isRTL ? "mr-64" : "ml-64"
-          } transition-all duration-300`}
+          className={`flex flex-1 flex-col transition-all duration-300 ${
+            isRTL
+              ? isCollapsed
+                ? "lg:mr-20"
+                : "lg:mr-64"
+              : isCollapsed
+              ? "lg:ml-20"
+              : "lg:ml-64"
+          }`}
         >
           {/* Header */}
           <DashboardHeader
