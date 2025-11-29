@@ -1,0 +1,27 @@
+# Robots.txt for Ebad Academy
+# https://www.robotstxt.org/robotstxt.html
+
+# Allow all search engines to crawl the site
+User-agent: *
+Allow: /
+
+# Disallow admin routes
+Disallow: /admin/
+Disallow: /api/admin/
+
+# Disallow authentication routes
+Disallow: /api/auth/
+
+# Disallow internal API routes
+Disallow: /api/cron/
+Disallow: /api/health
+
+# Allow public API documentation (if you add it later)
+Allow: /api/docs
+
+# Crawl delay (optional - prevents aggressive crawling)
+# Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://ebad-academy.vercel.app/sitemap.xml
+

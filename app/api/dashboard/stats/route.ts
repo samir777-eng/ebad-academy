@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -12,28 +13,59 @@ export async function GET() {
 
     const userId = session.user.id;
 
-    // OPTIMIZATION: Fetch all data in parallel using Promise.all
+    // OPTIMIZATION: Fetch all data in parallel using Promise.all with select statements
     const [allLevels, userLevels, recentActivity] = await Promise.all([
-      // Query 1: Get all levels
+      // Query 1: Get all levels with only needed fields
       prisma.level.findMany({
+        select: {
+          id: true,
+          levelNumber: true,
+          nameAr: true,
+          nameEn: true,
+          descriptionAr: true,
+          descriptionEn: true,
+        },
         orderBy: { levelNumber: "asc" },
       }),
-      // Query 2: Get user's level status with level data
+      // Query 2: Get user's level status with level data (only needed fields)
       prisma.userLevelStatus.findMany({
         where: { userId },
-        include: { level: true },
+        select: {
+          levelId: true,
+          isUnlocked: true,
+          completionPercentage: true,
+          level: {
+            select: {
+              id: true,
+              levelNumber: true,
+              nameAr: true,
+              nameEn: true,
+              descriptionAr: true,
+              descriptionEn: true,
+            },
+          },
+        },
         orderBy: { level: { levelNumber: "asc" } },
       }),
-      // Query 3: Get recent activity (last 5 completed lessons)
+      // Query 3: Get recent activity (last 5 completed lessons) with only needed fields
       prisma.userProgress.findMany({
         where: {
           userId,
           completed: true,
         },
-        include: {
+        select: {
+          score: true,
+          updatedAt: true,
           lesson: {
-            include: {
-              branch: true,
+            select: {
+              titleEn: true,
+              titleAr: true,
+              branch: {
+                select: {
+                  nameEn: true,
+                  nameAr: true,
+                },
+              },
             },
           },
         },
@@ -57,13 +89,27 @@ export async function GET() {
         });
       } catch (error) {
         // Ignore duplicate key errors (race condition)
-        console.log("Level status already exists, skipping creation");
+        logger.log("Level status already exists, skipping creation");
       }
 
-      // Fetch the newly created level statuses
+      // Fetch the newly created level statuses with only needed fields
       finalUserLevels = await prisma.userLevelStatus.findMany({
         where: { userId },
-        include: { level: true },
+        select: {
+          levelId: true,
+          isUnlocked: true,
+          completionPercentage: true,
+          level: {
+            select: {
+              id: true,
+              levelNumber: true,
+              nameAr: true,
+              nameEn: true,
+              descriptionAr: true,
+              descriptionEn: true,
+            },
+          },
+        },
         orderBy: { level: { levelNumber: "asc" } },
       });
     }
@@ -74,12 +120,40 @@ export async function GET() {
         (l) => l.isUnlocked && l.completionPercentage < 100
       ) || finalUserLevels[0];
 
-    // Get all lessons in current level with user progress
+    // Safety check: if no levels exist, return empty data
+    if (!currentLevel) {
+      return NextResponse.json({
+        totalLessons: 0,
+        completedLessons: 0,
+        currentLevel: null,
+        lessonsInCurrentLevel: [],
+        recentActivity: [],
+      });
+    }
+
+    // Get all lessons in current level with user progress (only needed fields)
     const lessonsInCurrentLevel = await prisma.lesson.findMany({
       where: { levelId: currentLevel.levelId },
-      include: {
-        branch: true,
-        userProgress: { where: { userId } },
+      select: {
+        id: true,
+        titleEn: true,
+        titleAr: true,
+        branchId: true,
+        branch: {
+          select: {
+            id: true,
+            slug: true,
+            nameEn: true,
+            nameAr: true,
+          },
+        },
+        userProgress: {
+          where: { userId },
+          select: {
+            completed: true,
+            score: true,
+          },
+        },
       },
       orderBy: { order: "asc" },
     });
@@ -172,7 +246,7 @@ export async function GET() {
       })),
     });
   } catch (error) {
-    console.error("Dashboard stats error:", error);
+    logger.error("Dashboard stats error:", error);
     return NextResponse.json(
       { error: "Failed to fetch dashboard stats" },
       { status: 500 }

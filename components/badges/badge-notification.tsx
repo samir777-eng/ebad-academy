@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Award, X } from "lucide-react";
+import { useState } from "react";
 
 type Badge = {
   id: number;
@@ -23,15 +23,9 @@ export function BadgeNotification({
   locale,
   onClose,
 }: BadgeNotificationProps) {
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(badges.length > 0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const isRTL = locale === "ar";
-
-  useEffect(() => {
-    if (badges.length > 0) {
-      setVisible(true);
-    }
-  }, [badges]);
 
   const handleClose = () => {
     setVisible(false);
@@ -48,6 +42,7 @@ export function BadgeNotification({
   if (badges.length === 0 || !visible) return null;
 
   const badge = badges[currentIndex];
+  if (!badge) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
@@ -127,4 +122,3 @@ export function BadgeNotification({
     </div>
   );
 }
-

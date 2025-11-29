@@ -1,4 +1,5 @@
 import { createWelcomeEmail, sendEmail } from "@/lib/email";
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
@@ -154,7 +155,7 @@ export async function POST(request: Request) {
         name: user.name,
         email: user.email,
       })
-    ).catch((err) => console.error("Failed to send welcome email:", err));
+    ).catch((err) => logger.error("Failed to send welcome email:", err));
 
     return NextResponse.json(
       {
@@ -168,7 +169,7 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Registration error:", error);
+    logger.error("Registration error:", error);
     return NextResponse.json(
       {
         error: "Something went wrong",

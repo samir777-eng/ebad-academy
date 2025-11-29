@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 
 interface Level {
@@ -16,19 +16,17 @@ interface Branch {
 }
 
 interface LessonFiltersProps {
-  locale: string;
   levels: Level[];
   branches: Branch[];
   initialLevel?: number;
   initialBranch?: string;
 }
 
-export function LessonFilters({ 
-  locale, 
-  levels, 
-  branches, 
-  initialLevel, 
-  initialBranch 
+export function LessonFilters({
+  levels,
+  branches,
+  initialLevel,
+  initialBranch,
 }: LessonFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -39,13 +37,13 @@ export function LessonFilters({
 
   const updateFilters = (newLevel: string, newBranch: string) => {
     const params = new URLSearchParams(searchParams);
-    
+
     if (newLevel) {
       params.set("level", newLevel);
     } else {
       params.delete("level");
     }
-    
+
     if (newBranch) {
       params.set("branch", newBranch);
     } else {
@@ -113,4 +111,3 @@ export function LessonFilters({
     </div>
   );
 }
-

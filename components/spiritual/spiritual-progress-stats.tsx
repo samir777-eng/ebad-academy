@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp, Flame, Target, Award } from "lucide-react";
+import { Award, Flame, Target, TrendingUp } from "lucide-react";
 
 type SpiritualProgressStatsProps = {
   progress: any[];
@@ -14,7 +14,6 @@ export function SpiritualProgressStats({
   const isRTL = locale === "ar";
 
   // Calculate statistics
-  const totalDays = progress.length;
   const prayerStreak = calculateStreak(progress, "prayers");
   const quranStreak = calculateStreak(progress, "quran");
   const totalQuranPages = progress.reduce(
@@ -130,4 +129,3 @@ function calculateStreak(progress: any[], type: "prayers" | "quran"): number {
 
   return streak;
 }
-

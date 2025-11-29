@@ -324,23 +324,27 @@ export default function HomePage() {
             <div className="p-8 md:p-12 rounded-3xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
               <div className="text-center">
                 <div className="text-5xl font-black text-primary-600 dark:text-primary-400 mb-6">
-                  "
+                  &ldquo;
                 </div>
-                <p className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-8 leading-relaxed">
-                  {t(
-                    `testimonials.${testimonials[currentTestimonial].key}.text`
-                  )}
-                </p>
-                <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                  {t(
-                    `testimonials.${testimonials[currentTestimonial].key}.name`
-                  )}
-                </h4>
-                <p className="text-gray-600 dark:text-gray-400">
-                  {t(
-                    `testimonials.${testimonials[currentTestimonial].key}.country`
-                  )}
-                </p>
+                {testimonials[currentTestimonial] && (
+                  <>
+                    <p className="text-xl font-medium text-gray-800 dark:text-gray-200 mb-8 leading-relaxed">
+                      {t(
+                        `testimonials.${testimonials[currentTestimonial].key}.text`
+                      )}
+                    </p>
+                    <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                      {t(
+                        `testimonials.${testimonials[currentTestimonial].key}.name`
+                      )}
+                    </h4>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {t(
+                        `testimonials.${testimonials[currentTestimonial].key}.country`
+                      )}
+                    </p>
+                  </>
+                )}
               </div>
             </div>
 

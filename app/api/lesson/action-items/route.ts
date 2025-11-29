@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ completions });
   } catch (error: any) {
-    console.error("Error fetching action item completions:", error);
+    logger.error("Error fetching action item completions:", error);
     return NextResponse.json(
       { error: error.message || "Failed to fetch completions" },
       { status: 500 }
@@ -99,7 +100,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, completion: result });
   } catch (error: any) {
-    console.error("Error toggling action item completion:", error);
+    logger.error("Error toggling action item completion:", error);
     return NextResponse.json(
       { error: error.message || "Failed to toggle completion" },
       { status: 500 }

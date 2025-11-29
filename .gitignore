@@ -40,3 +40,6 @@ prisma/migrations
 dev.db
 dev.db-journal
 
+
+# Sentry Config File
+.env.sentry-build-plugin

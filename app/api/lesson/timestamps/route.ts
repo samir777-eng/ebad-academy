@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -30,7 +31,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ timestamps });
   } catch (error: any) {
-    console.error("Error fetching timestamps:", error);
+    logger.error("Error fetching timestamps:", error);
     return NextResponse.json(
       { error: error.message || "Failed to fetch timestamps" },
       { status: 500 }
@@ -68,7 +69,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, timestamp: newTimestamp });
   } catch (error: any) {
-    console.error("Error creating timestamp:", error);
+    logger.error("Error creating timestamp:", error);
     return NextResponse.json(
       { error: error.message || "Failed to create timestamp" },
       { status: 500 }
@@ -112,7 +113,7 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error("Error deleting timestamp:", error);
+    logger.error("Error deleting timestamp:", error);
     return NextResponse.json(
       { error: error.message || "Failed to delete timestamp" },
       { status: 500 }

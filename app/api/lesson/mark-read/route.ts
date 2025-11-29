@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
       markedAsRead: userProgress.markedAsRead,
     });
   } catch (error) {
-    console.error("Error marking lesson as read:", error);
+    logger.error("Error marking lesson as read:", error);
     return NextResponse.json(
       { error: "Failed to update lesson status" },
       { status: 500 }

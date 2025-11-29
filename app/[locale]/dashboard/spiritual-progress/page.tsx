@@ -1,4 +1,4 @@
-import { SpiritualProgressDashboard } from "@/components/spiritual/spiritual-progress-dashboard";
+import { SpiritualProgressWrapper } from "@/components/spiritual/spiritual-progress-wrapper";
 import { auth } from "@/lib/auth";
 import { Heart } from "lucide-react";
 import { redirect } from "next/navigation";
@@ -35,7 +35,7 @@ export default async function SpiritualProgressPage({
       </div>
 
       {/* Dashboard */}
-      <SpiritualProgressDashboard userId={session.user.id} locale={locale} />
+      <SpiritualProgressWrapper userId={session.user.id} locale={locale} />
     </div>
   );
 }

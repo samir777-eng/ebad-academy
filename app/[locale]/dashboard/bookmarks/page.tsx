@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Bookmark, BookOpen, Clock } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -16,6 +17,7 @@ export default async function BookmarksPage({ params }: PageProps) {
 
   const { locale } = await params;
   const isRTL = locale === "ar";
+  const t = await getTranslations("bookmarks");
 
   // Fetch all bookmarks with lesson details
   const bookmarks = await prisma.lessonBookmark.findMany({
@@ -45,7 +47,7 @@ export default async function BookmarksPage({ params }: PageProps) {
         <div className="flex items-center gap-3 mb-2">
           <Bookmark className="h-8 w-8 text-primary-600" />
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {isRTL ? "الدروس المحفوظة" : "Bookmarked Lessons"}
+            {t("title")}
           </h1>
         </div>
         <p className="text-gray-600 dark:text-gray-400">
@@ -112,14 +114,14 @@ export default async function BookmarksPage({ params }: PageProps) {
                     <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                       <Clock className="h-4 w-4" />
                       <span>
-                        {lesson.duration} {isRTL ? "دقيقة" : "min"}
+                        {lesson.duration} {t("min")}
                       </span>
                     </div>
 
                     {isCompleted && (
                       <div className="flex items-center gap-2">
                         <div className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg text-sm font-semibold">
-                          {isRTL ? "مكتمل" : "Completed"} • {Math.round(score)}%
+                          {t("completed")} • {Math.round(score)}%
                         </div>
                       </div>
                     )}
@@ -133,7 +135,7 @@ export default async function BookmarksPage({ params }: PageProps) {
         <div className="text-center py-16">
           <Bookmark className="h-24 w-24 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-            {isRTL ? "لا توجد دروس محفوظة" : "No Bookmarked Lessons"}
+            {t("noBookmarks")}
           </h3>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             {isRTL
@@ -145,7 +147,7 @@ export default async function BookmarksPage({ params }: PageProps) {
             className="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 text-white rounded-xl hover:bg-primary-700 transition-colors"
           >
             <BookOpen className="h-5 w-5" />
-            {isRTL ? "تصفح الدروس" : "Browse Lessons"}
+            {t("browseLessons")}
           </Link>
         </div>
       )}

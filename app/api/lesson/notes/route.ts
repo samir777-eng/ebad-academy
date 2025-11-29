@@ -1,6 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import DOMPurify from "isomorphic-dompurify";
+import { NextRequest, NextResponse } from "next/server";
 
 // Get notes for a lesson
 export async function GET(req: NextRequest) {
@@ -31,7 +33,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ notes: notes?.content || "" });
   } catch (error: any) {
-    console.error("Error fetching notes:", error);
+    logger.error("Error fetching notes:", error);
     return NextResponse.json(
       { error: error.message || "Failed to fetch notes" },
       { status: 500 }
@@ -57,6 +59,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Sanitize content to prevent XSS attacks
+    const sanitizedContent = DOMPurify.sanitize(content || "");
+
     // Upsert notes (create or update)
     const notes = await prisma.lessonNote.upsert({
       where: {
@@ -66,23 +71,22 @@ export async function POST(req: NextRequest) {
         },
       },
       update: {
-        content: content || "",
+        content: sanitizedContent,
         updatedAt: new Date(),
       },
       create: {
         userId: session.user.id,
         lessonId: parseInt(lessonId),
-        content: content || "",
+        content: sanitizedContent,
       },
     });
 
     return NextResponse.json({ success: true, notes });
   } catch (error: any) {
-    console.error("Error saving notes:", error);
+    logger.error("Error saving notes:", error);
     return NextResponse.json(
       { error: error.message || "Failed to save notes" },
       { status: 500 }
     );
   }
 }
-

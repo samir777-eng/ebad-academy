@@ -1,6 +1,8 @@
 import { requireAdmin } from "@/lib/admin";
 import { auth } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import { MAX_BODY_SIZE, validateRequestSize } from "@/lib/request-validation";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(
@@ -8,6 +10,12 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Validate request size (prevent DoS attacks)
+    const sizeError = await validateRequestSize(req, MAX_BODY_SIZE.DEFAULT);
+    if (sizeError) {
+      return sizeError;
+    }
+
     const session = await auth();
 
     if (!session?.user) {
@@ -48,7 +56,7 @@ export async function PUT(
 
     return NextResponse.json({ success: true, badge });
   } catch (error: any) {
-    console.error("Error updating badge:", error);
+    logger.error("Error updating badge:", error);
     return NextResponse.json(
       { error: error.message || "Failed to update badge" },
       { status: 500 }
@@ -73,6 +81,16 @@ export async function DELETE(
     const { id } = await params;
     const badgeId = parseInt(id);
 
+    // Get badge info before deletion for audit log
+    const badgeToDelete = await prisma.badge.findUnique({
+      where: { id: badgeId },
+      select: { nameEn: true, nameAr: true },
+    });
+
+    if (!badgeToDelete) {
+      return NextResponse.json({ error: "Badge not found" }, { status: 404 });
+    }
+
     // Delete user badges first
     await prisma.userBadge.deleteMany({
       where: { badgeId },
@@ -83,9 +101,27 @@ export async function DELETE(
       where: { id: badgeId },
     });
 
+    // Create audit log
+    const { auditFromRequest, AuditAction, EntityType } = await import(
+      "@/lib/audit"
+    );
+    await auditFromRequest(
+      req,
+      session.user.id!,
+      AuditAction.BADGE_DELETED,
+      EntityType.BADGE,
+      badgeId.toString(),
+      {
+        deletedBadge: {
+          nameEn: badgeToDelete.nameEn,
+          nameAr: badgeToDelete.nameAr,
+        },
+      }
+    );
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error("Error deleting badge:", error);
+    logger.error("Error deleting badge:", error);
     return NextResponse.json(
       { error: error.message || "Failed to delete badge" },
       { status: 500 }

@@ -1,5 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import * as bcrypt from "bcryptjs";
+import { execSync } from "child_process";
+import * as fs from "fs";
+import * as path from "path";
 
 declare global {
   var __GLOBAL_TEARDOWN__: (() => void)[];
@@ -16,6 +19,9 @@ export default async function globalSetup() {
   console.log("🧪 Setting up TestSprite test environment...");
 
   try {
+    // Ensure test database exists and is migrated
+    await setupTestDatabase();
+
     // Clean up any existing test data
     await cleanupTestData();
 
@@ -43,6 +49,38 @@ export default async function globalSetup() {
     });
   } catch (error) {
     console.error("❌ Failed to set up test environment:", error);
+    throw error;
+  }
+}
+
+/**
+ * Setup test database - ensure it exists and is migrated
+ */
+async function setupTestDatabase() {
+  console.log("🗄️  Setting up test database...");
+
+  const testDbPath = path.join(process.cwd(), "prisma", "test.db");
+
+  // Check if test database exists
+  const dbExists = fs.existsSync(testDbPath);
+
+  if (!dbExists) {
+    console.log("📦 Test database not found, creating...");
+  }
+
+  // Run Prisma migrations to ensure schema is up to date
+  try {
+    console.log("🔄 Running Prisma migrations...");
+    execSync("npx prisma db push --skip-generate", {
+      env: {
+        ...process.env,
+        DATABASE_URL: "file:./prisma/test.db",
+      },
+      stdio: "inherit",
+    });
+    console.log("✅ Test database migrated successfully");
+  } catch (error) {
+    console.error("❌ Failed to migrate test database:", error);
     throw error;
   }
 }
@@ -279,6 +317,66 @@ async function createTestLessons() {
       explanationEn: "Muhammad (peace be upon him) is the final prophet",
       order: 5,
     },
+    {
+      lessonId: lesson.id,
+      questionTextAr: "ما هو الكتاب المقدس في الإسلام؟",
+      questionTextEn: "What is the holy book in Islam?",
+      type: "multiple_choice",
+      optionsAr: '["التوراة", "الإنجيل", "القرآن", "الزبور"]',
+      optionsEn: '["Torah", "Bible", "Quran", "Psalms"]',
+      correctAnswer: "2", // Third option (Quran)
+      explanationAr: "القرآن الكريم هو الكتاب المقدس في الإسلام",
+      explanationEn: "The Quran is the holy book in Islam",
+      order: 6,
+    },
+    {
+      lessonId: lesson.id,
+      questionTextAr: "هل الصيام في رمضان واجب؟",
+      questionTextEn: "Is fasting in Ramadan obligatory?",
+      type: "true_false",
+      optionsAr: null,
+      optionsEn: null,
+      correctAnswer: "true",
+      explanationAr: "نعم، الصيام في رمضان ركن من أركان الإسلام",
+      explanationEn: "Yes, fasting in Ramadan is a pillar of Islam",
+      order: 7,
+    },
+    {
+      lessonId: lesson.id,
+      questionTextAr: "كم عدد الصلوات المفروضة في اليوم؟",
+      questionTextEn: "How many obligatory prayers are there per day?",
+      type: "multiple_choice",
+      optionsAr: '["3", "4", "5", "6"]',
+      optionsEn: '["3", "4", "5", "6"]',
+      correctAnswer: "2", // Third option (5)
+      explanationAr: "الصلوات المفروضة خمس في اليوم",
+      explanationEn: "There are five obligatory prayers per day",
+      order: 8,
+    },
+    {
+      lessonId: lesson.id,
+      questionTextAr: "هل الزكاة واجبة على المسلمين؟",
+      questionTextEn: "Is Zakat (charity) obligatory for Muslims?",
+      type: "true_false",
+      optionsAr: null,
+      optionsEn: null,
+      correctAnswer: "true",
+      explanationAr: "نعم، الزكاة ركن من أركان الإسلام",
+      explanationEn: "Yes, Zakat is a pillar of Islam",
+      order: 9,
+    },
+    {
+      lessonId: lesson.id,
+      questionTextAr: "ما هي القبلة في الإسلام؟",
+      questionTextEn: "What is the Qibla in Islam?",
+      type: "multiple_choice",
+      optionsAr: '["القدس", "المدينة", "الكعبة", "الطائف"]',
+      optionsEn: '["Jerusalem", "Medina", "Kaaba", "Taif"]',
+      correctAnswer: "2", // Third option (Kaaba)
+      explanationAr: "الكعبة المشرفة في مكة هي القبلة",
+      explanationEn: "The Kaaba in Mecca is the Qibla",
+      order: 10,
+    },
   ];
 
   for (const question of questions) {
@@ -361,20 +459,24 @@ async function createTestUsers() {
     createdUsers.push(createdUser);
   }
 
-  // Create some progress for test users
+  // Create level status for ALL test users to prevent dashboard loading issues
   const testLevel = await prisma.level.findFirst({
     where: { levelNumber: 99 },
   });
-  if (testLevel && createdUsers[0]) {
-    await prisma.userLevelStatus.create({
-      data: {
-        userId: createdUsers[0].id,
-        levelId: testLevel.id,
-        isUnlocked: true,
-        completionPercentage: 0,
-        unlockedAt: new Date(),
-      },
-    });
+
+  if (testLevel) {
+    // Create level status for all test users
+    for (const user of createdUsers) {
+      await prisma.userLevelStatus.create({
+        data: {
+          userId: user.id,
+          levelId: testLevel.id,
+          isUnlocked: true,
+          completionPercentage: 0,
+          unlockedAt: new Date(),
+        },
+      });
+    }
   }
 }
 

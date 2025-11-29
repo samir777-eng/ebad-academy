@@ -4,6 +4,7 @@ import { isAdmin } from "@/lib/admin";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Trophy } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -14,6 +15,7 @@ export default async function LeaderboardPage({
 }) {
   const { locale } = await params;
   const session = await auth();
+  const t = await getTranslations("leaderboard");
 
   if (!session?.user?.id) {
     redirect(`/${locale}/login`);
@@ -101,14 +103,14 @@ export default async function LeaderboardPage({
                   href={`/${locale}/dashboard`}
                   className="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                 >
-                  {isRTL ? "لوحة التحكم" : "Dashboard"}
+                  {t("dashboard")}
                 </Link>
               </li>
               <li>
                 <span className="text-gray-400">{isRTL ? "←" : "→"}</span>
               </li>
               <li className="text-gray-900 dark:text-white font-medium">
-                {isRTL ? "لوحة المتصدرين" : "Leaderboard"}
+                {t("title")}
               </li>
             </ol>
           </nav>
@@ -118,9 +120,7 @@ export default async function LeaderboardPage({
             <div className="flex items-center gap-4 mb-4">
               <Trophy className="w-12 h-12" />
               <div>
-                <h1 className="text-3xl font-bold">
-                  {isRTL ? "لوحة المتصدرين" : "Leaderboard"}
-                </h1>
+                <h1 className="text-3xl font-bold">{t("title")}</h1>
                 <p className="text-yellow-100">
                   {isRTL
                     ? "تنافس مع زملائك في رحلة التعلم"
@@ -134,14 +134,12 @@ export default async function LeaderboardPage({
               <div className="bg-white/20 backdrop-blur-sm rounded-xl p-4 mt-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-yellow-100">
-                      {isRTL ? "ترتيبك الحالي" : "Your Current Rank"}
-                    </p>
+                    <p className="text-sm text-yellow-100">{t("yourRank")}</p>
                     <p className="text-3xl font-bold">#{currentUserRank}</p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-yellow-100">
-                      {isRTL ? "إجمالي النقاط" : "Total Points"}
+                      {t("totalPoints")}
                     </p>
                     <p className="text-3xl font-bold">
                       {leaderboardData.find((u) => u.id === session.user!.id)
@@ -156,7 +154,7 @@ export default async function LeaderboardPage({
           {/* Scoring System */}
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-              {isRTL ? "نظام النقاط" : "Scoring System"}
+              {t("scoringSystem")}
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
@@ -164,7 +162,7 @@ export default async function LeaderboardPage({
                   10
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {isRTL ? "نقاط لكل درس" : "Points per Lesson"}
+                  {t("pointsPerLesson")}
                 </p>
               </div>
               <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
@@ -172,7 +170,7 @@ export default async function LeaderboardPage({
                   15
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {isRTL ? "نقاط لكل اختبار" : "Points per Quiz"}
+                  {t("pointsPerQuiz")}
                 </p>
               </div>
               <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
@@ -180,7 +178,7 @@ export default async function LeaderboardPage({
                   25
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {isRTL ? "نقاط لكل شارة" : "Points per Badge"}
+                  {t("pointsPerBadge")}
                 </p>
               </div>
               <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
@@ -188,7 +186,7 @@ export default async function LeaderboardPage({
                   100
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {isRTL ? "نقاط لكل مستوى" : "Points per Level"}
+                  {t("pointsPerLevel")}
                 </p>
               </div>
             </div>

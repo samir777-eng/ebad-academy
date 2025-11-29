@@ -303,5 +303,179 @@
       "deleteConfirm": "هل أنت متأكد من رغبتك في حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.",
       "cancel": "إلغاء"
     }
+  },
+  "admin": {
+    "dashboard": {
+      "totalUsers": "إجمالي المستخدمين",
+      "totalLessons": "إجمالي الدروس",
+      "totalQuestions": "إجمالي الأسئلة",
+      "totalLevels": "إجمالي المستويات",
+      "manageLessons": "إدارة الدروس",
+      "manageLessonsDesc": "إنشاء وتعديل وحذف الدروس",
+      "manageUsers": "إدارة المستخدمين",
+      "manageUsersDesc": "عرض وإدارة حسابات المستخدمين",
+      "viewAnalytics": "عرض التحليلات",
+      "viewAnalyticsDesc": "تتبع أداء المنصة والمشاركة",
+      "manageBadges": "إدارة الشارات",
+      "manageBadgesDesc": "إنشاء وإدارة شارات الإنجازات"
+    },
+    "badges": {
+      "editBadge": "تعديل الشارة",
+      "manuallyAssigned": "تم التعيين يدوياً",
+      "manual": "يدوي",
+      "auto": "تلقائي"
+    },
+    "users": {
+      "passed": "نجح",
+      "failed": "رسب"
+    },
+    "mindmap": {
+      "editor": "محرر الخريطة الذهنية",
+      "createNode": "إنشاء عقدة جديدة",
+      "createNodeDescription": "أضف مفهوماً جديداً إلى خريطتك الذهنية",
+      "loading": "جاري التحميل...",
+      "savePositions": "حفظ المواضع",
+      "saveFailed": "فشل الحفظ",
+      "positionsSaved": "تم حفظ المواضع بنجاح",
+      "closePanel": "إغلاق اللوحة",
+      "type": "النوع",
+      "color": "اللون",
+      "description": "الوصف",
+      "titleArabic": "العنوان بالعربية",
+      "titleEnglish": "العنوان بالإنجليزية",
+      "descriptionArabic": "الوصف بالعربية",
+      "descriptionEnglish": "الوصف بالإنجليزية",
+      "root": "جذر",
+      "category": "فئة",
+      "topic": "موضوع",
+      "subtopic": "موضوع فرعي",
+      "detail": "تفصيل",
+      "note": "ملاحظة",
+      "shape": "الشكل",
+      "circle": "دائرة",
+      "rectangle": "مستطيل",
+      "diamond": "معين",
+      "publishImmediately": "نشر فوراً",
+      "publishHelp": "اجعل هذه العقدة مرئية للطلاب فوراً",
+      "titleArHelp": "أدخل اسم المفهوم بالعربية",
+      "titleEnHelp": "أدخل اسم المفهوم بالإنجليزية",
+      "descriptionArHelp": "اختياري: أضف المزيد من التفاصيل بالعربية",
+      "descriptionEnHelp": "اختياري: أضف المزيد من التفاصيل بالإنجليزية",
+      "typeHelp": "اختر مستوى التسلسل الهرمي",
+      "shapeHelp": "المظهر البصري",
+      "colorHelp": "اختر لوناً للتنظيم البصري",
+      "create": "إنشاء عقدة",
+      "creating": "جاري الإنشاء...",
+      "cancel": "إعادة تعيين",
+      "nodeCreated": "تم إنشاء العقدة بنجاح",
+      "manageMindMap": "إدارة الخريطة الذهنية",
+      "openEditor": "فتح المحرر",
+      "mindMapExists": "توجد خريطة ذهنية لهذا الدرس",
+      "noMindMapYet": "لا توجد خريطة ذهنية بعد",
+      "emptyStateTitle": "ابدأ ببناء خريطتك الذهنية",
+      "emptyStateDescription": "أنشئ أول عقدة لبدء تصور هيكل الدرس",
+      "step1Title": "إنشاء العقدة الجذرية",
+      "step1": "انقر على 'إنشاء عقدة جديدة' لإضافة الموضوع الرئيسي",
+      "step2Title": "إضافة الفئات",
+      "step2": "قسّم الموضوع إلى فئات رئيسية",
+      "step3Title": "بناء الهيكل",
+      "step3": "أضف المواضيع والمواضيع الفرعية والتفاصيل لكل فئة",
+      "step4Title": "التنظيم والنشر",
+      "step4": "رتب العقد بصرياً وانشر عندما تكون جاهزاً",
+      "proTip": "نصيحة احترافية",
+      "proTipText": "استخدم ألواناً وأشكالاً مختلفة للتمييز بين أنواع العقد للحصول على وضوح بصري أفضل"
+    }
+  },
+  "mindmap": {
+    "mindMap": "الخريطة الذهنية",
+    "noMindMap": "لا توجد خريطة ذهنية لهذا الدرس",
+    "type": "النوع",
+    "level": "المستوى",
+    "attachments": "المرفقات"
+  },
+  "achievements": {
+    "title": "الإنجازات",
+    "dashboard": "لوحة التحكم",
+    "earnedOn": "تم الحصول عليها في",
+    "noBadges": "لا توجد شارات متاحة بعد"
+  },
+  "quizHistory": {
+    "title": "سجل الاختبارات",
+    "backToLesson": "العودة إلى الدرس",
+    "noAttempts": "لم تقم بأي محاولات لهذا الاختبار بعد",
+    "attempt": "المحاولة",
+    "score": "النتيجة",
+    "correctAnswers": "الإجابات الصحيحة",
+    "date": "التاريخ",
+    "review": "مراجعة"
+  },
+  "quizReview": {
+    "title": "مراجعة الاختبار",
+    "backToHistory": "العودة إلى السجل",
+    "score": "النتيجة",
+    "status": "الحالة",
+    "passed": "نجح",
+    "failed": "رسب",
+    "correct": "صحيح",
+    "incorrect": "خطأ",
+    "correctLabel": "صحيح",
+    "incorrectLabel": "خطأ",
+    "date": "التاريخ",
+    "questionsReview": "مراجعة الأسئلة",
+    "question": "السؤال",
+    "true": "صحيح",
+    "false": "خطأ",
+    "explanation": "التفسير:"
+  },
+  "leaderboard": {
+    "title": "لوحة المتصدرين",
+    "dashboard": "لوحة التحكم",
+    "subtitle": "تنافس مع أقرانك في رحلة التعلم",
+    "yourRank": "ترتيبك الحالي",
+    "totalPoints": "إجمالي النقاط",
+    "scoringSystem": "نظام النقاط",
+    "pointsPerLesson": "نقاط لكل درس",
+    "pointsPerQuiz": "نقاط لكل اختبار",
+    "pointsPerBadge": "نقاط لكل شارة",
+    "pointsPerLevel": "نقاط لكل مستوى",
+    "anonymous": "مجهول"
+  },
+  "bookmarks": {
+    "title": "الدروس المحفوظة",
+    "completed": "مكتمل",
+    "min": "دقيقة",
+    "noBookmarks": "لا توجد دروس محفوظة",
+    "noBookmarksDesc": "احفظ دروسك المفضلة للوصول السريع",
+    "browseLessons": "تصفح الدروس"
+  },
+  "spiritualProgress": {
+    "title": "التقدم الروحي",
+    "subtitle": "تتبع عبادتك اليومية وأعمالك الصالحة"
+  },
+  "certificate": {
+    "tryAgain": "حاول مرة أخرى",
+    "subtitle": "احصل على شهادة إتمام المستوى",
+    "generating": "جاري الإنشاء...",
+    "generate": "إنشاء الشهادة",
+    "title": "شهادة إتمام",
+    "certifies": "هذا يشهد بأن",
+    "errorGenerate": "فشل إنشاء الشهادة"
+  },
+  "errors": {
+    "registrationFailed": "فشل التسجيل",
+    "genericError": "حدث خطأ. يرجى المحاولة مرة أخرى.",
+    "tooManyAttempts": "محاولات تسجيل دخول كثيرة جداً. يرجى المحاولة لاحقاً.",
+    "failedToFetch": "فشل جلب البيانات",
+    "failedToFetchLevels": "فشل جلب المستويات",
+    "failedToFetchStats": "فشل جلب الإحصائيات",
+    "failedToFetchLevelStats": "فشل جلب إحصائيات المستوى"
+  },
+  "aria": {
+    "hidePassword": "إخفاء كلمة المرور",
+    "showPassword": "إظهار كلمة المرور"
+  },
+  "pagination": {
+    "previous": "السابق",
+    "next": "التالي"
   }
 }

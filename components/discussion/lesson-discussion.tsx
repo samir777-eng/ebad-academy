@@ -1,7 +1,7 @@
 "use client";
 
+import { CheckCircle, MessageCircle, Pin, ThumbsUp } from "lucide-react";
 import { useState } from "react";
-import { MessageCircle, ThumbsUp, CheckCircle, Pin } from "lucide-react";
 
 type Discussion = {
   id: number;
@@ -21,18 +21,11 @@ type LessonDiscussionProps = {
 };
 
 export function LessonDiscussion({ lessonId, locale }: LessonDiscussionProps) {
-  const [discussions, setDiscussions] = useState<Discussion[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [discussions] = useState<Discussion[]>([]);
   const [showNewDiscussion, setShowNewDiscussion] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
   const isRTL = locale === "ar";
-
-  // Placeholder implementation - would connect to API
-  const loadDiscussions = async () => {
-    // TODO: Implement API call
-    setIsLoading(false);
-  };
 
   const createDiscussion = async () => {
     // TODO: Implement API call
@@ -75,7 +68,9 @@ export function LessonDiscussion({ lessonId, locale }: LessonDiscussionProps) {
                 type="text"
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
-                placeholder={isRTL ? "اكتب عنوان السؤال..." : "Enter question title..."}
+                placeholder={
+                  isRTL ? "اكتب عنوان السؤال..." : "Enter question title..."
+                }
                 className="w-full px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                 dir={isRTL ? "rtl" : "ltr"}
               />
@@ -87,7 +82,11 @@ export function LessonDiscussion({ lessonId, locale }: LessonDiscussionProps) {
               <textarea
                 value={newContent}
                 onChange={(e) => setNewContent(e.target.value)}
-                placeholder={isRTL ? "اشرح سؤالك بالتفصيل..." : "Explain your question in detail..."}
+                placeholder={
+                  isRTL
+                    ? "اشرح سؤالك بالتفصيل..."
+                    : "Explain your question in detail..."
+                }
                 rows={4}
                 className="w-full px-4 py-2 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 resize-none"
                 dir={isRTL ? "rtl" : "ltr"}
@@ -133,17 +132,27 @@ export function LessonDiscussion({ lessonId, locale }: LessonDiscussionProps) {
               <div className="flex items-start gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    {discussion.isPinned && <Pin className="h-4 w-4 text-primary-600" />}
-                    {discussion.isResolved && <CheckCircle className="h-4 w-4 text-green-600" />}
+                    {discussion.isPinned && (
+                      <Pin className="h-4 w-4 text-primary-600" />
+                    )}
+                    {discussion.isResolved && (
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                    )}
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       {discussion.title}
                     </h3>
                   </div>
-                  <p className="text-gray-600 dark:text-gray-400 mb-3">{discussion.content}</p>
+                  <p className="text-gray-600 dark:text-gray-400 mb-3">
+                    {discussion.content}
+                  </p>
                   <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
                     <span>{discussion.userName}</span>
                     <span>•</span>
-                    <span>{new Date(discussion.createdAt).toLocaleDateString(locale)}</span>
+                    <span>
+                      {new Date(discussion.createdAt).toLocaleDateString(
+                        locale
+                      )}
+                    </span>
                     <span>•</span>
                     <span className="flex items-center gap-1">
                       <ThumbsUp className="h-4 w-4" />
@@ -164,4 +173,3 @@ export function LessonDiscussion({ lessonId, locale }: LessonDiscussionProps) {
     </div>
   );
 }
-

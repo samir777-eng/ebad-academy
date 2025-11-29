@@ -1,10 +1,18 @@
 import { requireAdmin } from "@/lib/admin";
 import { auth } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import { MAX_BODY_SIZE, validateRequestSize } from "@/lib/request-validation";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
+    // Validate request size (prevent DoS attacks)
+    const sizeError = await validateRequestSize(req, MAX_BODY_SIZE.DEFAULT);
+    if (sizeError) {
+      return sizeError;
+    }
+
     const session = await auth();
 
     if (!session?.user) {
@@ -57,7 +65,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, badge }, { status: 201 });
   } catch (error: any) {
-    console.error("Error creating badge:", error);
+    logger.error("Error creating badge:", error);
     return NextResponse.json(
       { error: error.message || "Failed to create badge" },
       { status: 500 }

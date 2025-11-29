@@ -8,6 +8,7 @@ import {
   CheckCircle,
   TrendingUp,
 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
@@ -18,6 +19,7 @@ export default async function UserDetailPage({
 }) {
   const { locale, id } = await params;
   const session = await auth();
+  const t = await getTranslations("quizHistory");
 
   if (!session?.user?.id) {
     redirect(`/${locale}/login`);
@@ -141,7 +143,7 @@ export default async function UserDetailPage({
                 <CheckCircle className="w-5 h-5 text-white" />
               </div>
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                Passed Quizzes
+                {t("passedQuizzes")}
               </span>
             </div>
             <p className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -204,7 +206,7 @@ export default async function UserDetailPage({
                             : "bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300"
                         }`}
                       >
-                        {attempt.passed ? "Passed" : "Failed"}
+                        {attempt.passed ? t("passed") : t("failed")}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">

@@ -1,18 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import {
+  DollarSign,
+  Heart,
+  Loader2,
+  MessageCircle,
+  Moon,
+  Save,
+  Sparkles,
   Sun,
   Sunrise,
   Sunset,
-  Moon,
-  Heart,
-  DollarSign,
-  Sparkles,
-  MessageCircle,
-  Save,
-  Loader2,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type SpiritualProgressTrackerProps = {
   userId: string;
@@ -22,7 +22,7 @@ type SpiritualProgressTrackerProps = {
 };
 
 export function SpiritualProgressTracker({
-  userId,
+  userId: _userId,
   locale,
   date,
   onUpdate,

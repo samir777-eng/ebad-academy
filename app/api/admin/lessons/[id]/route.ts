@@ -1,6 +1,8 @@
 import { requireAdmin } from "@/lib/admin";
 import { auth } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import { MAX_BODY_SIZE, validateRequestSize } from "@/lib/request-validation";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(
@@ -8,6 +10,15 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Validate request size (prevent DoS attacks with large payloads)
+    const sizeError = await validateRequestSize(
+      req,
+      MAX_BODY_SIZE.LARGE_CONTENT
+    );
+    if (sizeError) {
+      return sizeError;
+    }
+
     const session = await auth();
 
     if (!session?.user) {
@@ -83,7 +94,7 @@ export async function PUT(
 
     return NextResponse.json({ success: true, lesson });
   } catch (error: any) {
-    console.error("Error updating lesson:", error);
+    logger.error("Error updating lesson:", error);
     return NextResponse.json(
       { error: error.message || "Failed to update lesson" },
       { status: 500 }
@@ -108,6 +119,16 @@ export async function DELETE(
     const { id } = await params;
     const lessonId = parseInt(id);
 
+    // Get lesson info before deletion for audit log
+    const lessonToDelete = await prisma.lesson.findUnique({
+      where: { id: lessonId },
+      select: { titleEn: true, titleAr: true, levelId: true, branchId: true },
+    });
+
+    if (!lessonToDelete) {
+      return NextResponse.json({ error: "Lesson not found" }, { status: 404 });
+    }
+
     // Delete questions first (cascade)
     await prisma.question.deleteMany({
       where: { lessonId },
@@ -128,9 +149,29 @@ export async function DELETE(
       where: { id: lessonId },
     });
 
+    // Create audit log
+    const { auditFromRequest, AuditAction, EntityType } = await import(
+      "@/lib/audit"
+    );
+    await auditFromRequest(
+      req,
+      session.user.id!,
+      AuditAction.LESSON_DELETED,
+      EntityType.LESSON,
+      lessonId.toString(),
+      {
+        deletedLesson: {
+          titleEn: lessonToDelete.titleEn,
+          titleAr: lessonToDelete.titleAr,
+          levelId: lessonToDelete.levelId,
+          branchId: lessonToDelete.branchId,
+        },
+      }
+    );
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error("Error deleting lesson:", error);
+    logger.error("Error deleting lesson:", error);
     return NextResponse.json(
       { error: error.message || "Failed to delete lesson" },
       { status: 500 }

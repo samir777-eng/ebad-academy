@@ -1,9 +1,22 @@
 import { auth } from "@/lib/auth";
+import {
+  checkAndAwardBadges,
+  getNewlyAwardedBadges,
+} from "@/lib/badge-checker";
+import { checkAndUnlockNextLevel } from "@/lib/level-unlock";
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { MAX_BODY_SIZE, validateRequestSize } from "@/lib/request-validation";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Validate request size (prevent DoS attacks)
+    const sizeError = await validateRequestSize(request, MAX_BODY_SIZE.DEFAULT);
+    if (sizeError) {
+      return sizeError;
+    }
+
     // Parse and validate input BEFORE authentication check
     // This prevents malicious payloads from even reaching the auth layer
     const body = await request.json();
@@ -79,62 +92,63 @@ export async function POST(request: Request) {
     }).length;
     const passed = score >= 60;
 
-    // Create quiz attempt with answers
-    const quizAttempt = await prisma.quizAttempt.create({
-      data: {
-        userId: session.user.id,
-        lessonId: lesson.id,
-        score,
-        totalQuestions,
-        correctAnswers,
-        passed,
-        answers: {
-          create: lesson.questions.map((question, index) => ({
-            questionId: question.id,
-            answer: answers[index] || "",
-            isCorrect: answers[index] === question.correctAnswer,
-          })),
-        },
-      },
-    });
-
-    // Update or create user progress
-    await prisma.userProgress.upsert({
-      where: {
-        userId_lessonId: {
+    // Wrap all database operations in a transaction to ensure data consistency
+    const result = await prisma.$transaction(async (tx) => {
+      // Create quiz attempt with answers
+      const quizAttempt = await tx.quizAttempt.create({
+        data: {
           userId: session.user.id,
           lessonId: lesson.id,
+          score,
+          totalQuestions,
+          correctAnswers,
+          passed,
+          answers: {
+            create: lesson.questions.map((question, index) => ({
+              questionId: question.id,
+              answer: answers[index] || "",
+              isCorrect: answers[index] === question.correctAnswer,
+            })),
+          },
         },
-      },
-      update: {
-        completed: passed,
-        score: score,
-        attempts: {
-          increment: 1,
+      });
+
+      // Update or create user progress
+      await tx.userProgress.upsert({
+        where: {
+          userId_lessonId: {
+            userId: session.user.id,
+            lessonId: lesson.id,
+          },
         },
-        lastAttempt: new Date(),
-      },
-      create: {
-        userId: session.user.id,
-        lessonId: lesson.id,
-        completed: passed,
-        score: score,
-        attempts: 1,
-        lastAttempt: new Date(),
-      },
+        update: {
+          completed: passed,
+          score: score,
+          attempts: {
+            increment: 1,
+          },
+          lastAttempt: new Date(),
+        },
+        create: {
+          userId: session.user.id,
+          lessonId: lesson.id,
+          completed: passed,
+          score: score,
+          attempts: 1,
+          lastAttempt: new Date(),
+        },
+      });
+
+      return { quizAttempt };
     });
 
-    // Check if this completion unlocks the next level
-    const { checkAndUnlockNextLevel } = await import("@/lib/level-unlock");
+    // Check if this completion unlocks the next level (outside transaction)
     const unlockResult = await checkAndUnlockNextLevel(
       session.user.id,
       lesson.levelId
     );
 
-    // Check and award badges
-    const { checkAndAwardBadges, getNewlyAwardedBadges } = await import(
-      "@/lib/badge-checker"
-    );
+    // Check and award badges (outside transaction)
     const newBadgeIds = await checkAndAwardBadges(session.user.id);
     const newBadges = await getNewlyAwardedBadges(newBadgeIds);
 
@@ -142,14 +156,14 @@ export async function POST(request: Request) {
       success: true,
       score,
       passed,
-      attemptId: quizAttempt.id,
+      attemptId: result.quizAttempt.id,
       levelUnlocked: unlockResult.levelUnlocked,
       nextLevelId: unlockResult.nextLevelId,
       completionPercentage: unlockResult.completionPercentage,
       newBadges: newBadges,
     });
   } catch (error) {
-    console.error("Error submitting quiz:", error);
+    logger.error("Error submitting quiz:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

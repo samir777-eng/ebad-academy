@@ -44,9 +44,9 @@ type QuizInterfaceProps = {
 
 export function QuizInterface({
   lesson,
-  userProgress,
+  userProgress: _userProgress,
   locale,
-  userId,
+  userId: _userId,
 }: QuizInterfaceProps) {
   const router = useRouter();
   const isRTL = locale === "ar";
@@ -57,7 +57,12 @@ export function QuizInterface({
     // Fisher-Yates shuffle algorithm
     for (let i = questions.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [questions[i], questions[j]] = [questions[j], questions[i]];
+      const temp = questions[i];
+      const swap = questions[j];
+      if (temp !== undefined && swap !== undefined) {
+        questions[i] = swap;
+        questions[j] = temp;
+      }
     }
     return questions;
   });
@@ -85,6 +90,10 @@ export function QuizInterface({
   const branchName = isRTL ? lesson.branch.nameAr : lesson.branch.nameEn;
 
   const question = shuffledQuestions[currentQuestion];
+  if (!question) {
+    return <div>No questions available</div>;
+  }
+
   const questionText = isRTL
     ? question.questionTextAr
     : question.questionTextEn;
@@ -199,7 +208,12 @@ export function QuizInterface({
     const questions = [...lesson.questions];
     for (let i = questions.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [questions[i], questions[j]] = [questions[j], questions[i]];
+      const temp = questions[i];
+      const swap = questions[j];
+      if (temp !== undefined && swap !== undefined) {
+        questions[i] = swap;
+        questions[j] = temp;
+      }
     }
     setShuffledQuestions(questions);
 
@@ -311,6 +325,8 @@ export function QuizInterface({
           <div className="space-y-6">
             {shuffledQuestions.map((q, index) => {
               const result = results[index];
+              if (!result) return null;
+
               const qText = isRTL ? q.questionTextAr : q.questionTextEn;
               const explanation = isRTL ? q.explanationAr : q.explanationEn;
 

@@ -3,6 +3,7 @@ import { isAdmin } from "@/lib/admin";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Award, ChevronRight, Home, Lock } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -13,6 +14,7 @@ export default async function AchievementsPage({
 }) {
   const { locale } = await params;
   const session = await auth();
+  const t = await getTranslations("achievements");
 
   if (!session?.user?.id) {
     redirect(`/${locale}/login`);
@@ -130,7 +132,7 @@ export default async function AchievementsPage({
                   {/* Earned Date */}
                   {isEarned && userBadge && (
                     <p className="text-xs text-center text-primary-600 dark:text-primary-400 font-medium">
-                      {isRTL ? "تم الحصول عليها في" : "Earned on"}{" "}
+                      {t("earnedOn")}{" "}
                       {new Date(userBadge.earnedDate).toLocaleDateString(
                         isRTL ? "ar-EG" : "en-US",
                         {
@@ -151,9 +153,7 @@ export default async function AchievementsPage({
             <div className="text-center py-12">
               <Award className="w-16 h-16 text-gray-400 mx-auto mb-4" />
               <p className="text-gray-600 dark:text-gray-400">
-                {isRTL
-                  ? "لا توجد شارات متاحة حالياً"
-                  : "No badges available yet"}
+                {t("noBadgesAvailable")}
               </p>
             </div>
           )}

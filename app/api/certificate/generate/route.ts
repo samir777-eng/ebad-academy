@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -116,7 +117,7 @@ export async function POST(req: NextRequest) {
       certificate: certificateData,
     });
   } catch (error: any) {
-    console.error("Error generating certificate:", error);
+    logger.error("Error generating certificate:", error);
     return NextResponse.json(
       { error: error.message || "Failed to generate certificate" },
       { status: 500 }

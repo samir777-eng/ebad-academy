@@ -42,12 +42,20 @@ export function VideoTimestamps({
         `/api/lesson/timestamps?lessonId=${lessonId}`
       );
       const data = await response.json();
-      const filtered = data.timestamps.filter(
-        (t: Timestamp) => t.videoIndex === videoIndex
-      );
-      setTimestamps(filtered);
+
+      // Check if timestamps exist and is an array
+      if (data && Array.isArray(data.timestamps)) {
+        const filtered = data.timestamps.filter(
+          (t: Timestamp) => t.videoIndex === videoIndex
+        );
+        setTimestamps(filtered);
+      } else {
+        // No timestamps available
+        setTimestamps([]);
+      }
     } catch (error) {
       console.error("Error loading timestamps:", error);
+      setTimestamps([]);
     } finally {
       setIsLoading(false);
     }
@@ -104,9 +112,16 @@ export function VideoTimestamps({
     const parts = time.split(":").map((p) => parseInt(p));
     if (parts.some(isNaN)) return null;
 
-    if (parts.length === 1) return parts[0]; // seconds only
-    if (parts.length === 2) return parts[0] * 60 + parts[1]; // mm:ss
-    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2]; // hh:mm:ss
+    if (parts.length === 1 && parts[0] !== undefined) return parts[0]; // seconds only
+    if (parts.length === 2 && parts[0] !== undefined && parts[1] !== undefined)
+      return parts[0] * 60 + parts[1]; // mm:ss
+    if (
+      parts.length === 3 &&
+      parts[0] !== undefined &&
+      parts[1] !== undefined &&
+      parts[2] !== undefined
+    )
+      return parts[0] * 3600 + parts[1] * 60 + parts[2]; // hh:mm:ss
     return null;
   };
 

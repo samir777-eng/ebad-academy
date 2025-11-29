@@ -14,7 +14,7 @@ import {
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const navigationItems = [
   {
@@ -66,7 +66,7 @@ export function DashboardSidebar({
   isRTL,
   isAdmin,
   isSidebarOpen,
-  setIsSidebarOpen,
+  setIsSidebarOpen: _setIsSidebarOpen,
 }: {
   locale: string;
   isRTL: boolean;
@@ -78,20 +78,15 @@ export function DashboardSidebar({
   const pathname = usePathname();
 
   // Collapse state for desktop (persisted in localStorage)
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
-  // Load collapse state from localStorage on mount
-  useEffect(() => {
+  const [isCollapsed, setIsCollapsed] = useState(() => {
     try {
       const saved = localStorage.getItem("sidebar-collapsed");
-      if (saved !== null) {
-        setIsCollapsed(saved === "true");
-      }
+      return saved === "true";
     } catch (error) {
       // localStorage not available (SSR)
-      console.error("localStorage not available:", error);
+      return false;
     }
-  }, []);
+  });
 
   // Save collapse state to localStorage and notify layout
   const toggleCollapse = () => {

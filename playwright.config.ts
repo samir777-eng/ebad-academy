@@ -12,6 +12,8 @@ export default defineConfig({
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   timeout: 90000, // Increase global test timeout to 90 seconds for dashboard loading
+  globalSetup: "./tests/test-utils/global-setup.ts",
+  globalTeardown: "./tests/test-utils/global-teardown.ts",
   reporter: [
     ["html", { outputFolder: "test-results/html-report" }],
     ["json", { outputFile: "test-results/results.json" }],
@@ -37,7 +39,7 @@ export default defineConfig({
     env: {
       SKIP_CSRF_CHECK: "true",
       NODE_ENV: "test",
-      DATABASE_URL: "file:./prisma/dev.db",
+      DATABASE_URL: "file:./prisma/test.db",
       NEXTAUTH_URL: "http://localhost:3000",
       NEXTAUTH_SECRET: "test-secret-key-for-playwright-tests",
       AUTH_TRUST_HOST: "true",

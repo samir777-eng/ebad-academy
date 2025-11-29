@@ -1,16 +1,23 @@
+import { Pagination } from "@/components/ui/pagination";
 import { auth } from "@/lib/auth";
+import { parsePaginationParams } from "@/lib/pagination";
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
+import { ArrowLeft, CheckCircle, Clock, Eye, XCircle } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
-import { Clock, CheckCircle, XCircle, Eye, ArrowLeft } from "lucide-react";
+import { redirect } from "next/navigation";
 
 export default async function QuizHistoryPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; lessonId: string }>;
+  searchParams: Promise<{ page?: string; limit?: string }>;
 }) {
   const { locale, lessonId } = await params;
+  const { page: pageParam, limit: limitParam } = await searchParams;
   const isRTL = locale === "ar";
+  const t = await getTranslations("quizHistory");
 
   const session = await auth();
   if (!session?.user?.id) {
@@ -30,7 +37,21 @@ export default async function QuizHistoryPage({
     redirect(`/${locale}/dashboard`);
   }
 
-  // Get all quiz attempts for this lesson
+  // Parse pagination parameters
+  const { page, limit, skip } = parsePaginationParams({
+    page: pageParam,
+    limit: limitParam,
+  });
+
+  // Get total count for pagination
+  const totalAttempts = await prisma.quizAttempt.count({
+    where: {
+      userId: session.user.id,
+      lessonId: parseInt(lessonId),
+    },
+  });
+
+  // Get paginated quiz attempts for this lesson
   const attempts = await prisma.quizAttempt.findMany({
     where: {
       userId: session.user.id,
@@ -39,7 +60,14 @@ export default async function QuizHistoryPage({
     orderBy: {
       attemptDate: "desc",
     },
+    skip,
+    take: limit,
   });
+
+  // Calculate pagination metadata
+  const totalPages = Math.ceil(totalAttempts / limit);
+  const hasMore = page < totalPages;
+  const hasPrevious = page > 1;
 
   const lessonTitle = isRTL ? lesson.titleAr : lesson.titleEn;
   const branchName = isRTL ? lesson.branch.nameAr : lesson.branch.nameEn;
@@ -54,10 +82,10 @@ export default async function QuizHistoryPage({
             className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 mb-4"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>{isRTL ? "العودة إلى الدرس" : "Back to Lesson"}</span>
+            <span>{t("backToLesson")}</span>
           </Link>
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-            {isRTL ? "سجل الاختبارات" : "Quiz History"}
+            {t("title")}
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400">
             {lessonTitle} • {branchName}
@@ -86,7 +114,7 @@ export default async function QuizHistoryPage({
                     {/* Attempt Number */}
                     <div className="flex flex-col items-center">
                       <span className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                        {isRTL ? "المحاولة" : "Attempt"}
+                        {t("attempt")}
                       </span>
                       <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">
                         #{attempts.length - index}
@@ -96,7 +124,7 @@ export default async function QuizHistoryPage({
                     {/* Score */}
                     <div className="flex flex-col">
                       <span className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                        {isRTL ? "النتيجة" : "Score"}
+                        {t("score")}
                       </span>
                       <div className="flex items-center gap-2">
                         <span className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -113,7 +141,7 @@ export default async function QuizHistoryPage({
                     {/* Correct Answers */}
                     <div className="flex flex-col">
                       <span className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                        {isRTL ? "الإجابات الصحيحة" : "Correct Answers"}
+                        {t("correctAnswers")}
                       </span>
                       <span className="text-xl font-semibold text-gray-900 dark:text-white">
                         {attempt.correctAnswers}/{attempt.totalQuestions}
@@ -123,7 +151,7 @@ export default async function QuizHistoryPage({
                     {/* Date */}
                     <div className="flex flex-col">
                       <span className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                        {isRTL ? "التاريخ" : "Date"}
+                        {t("date")}
                       </span>
                       <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                         <Clock className="h-4 w-4" />
@@ -146,15 +174,23 @@ export default async function QuizHistoryPage({
                   {/* View Button */}
                   <div className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-600 to-secondary-600 text-white font-semibold">
                     <Eye className="h-5 w-5" />
-                    <span>{isRTL ? "مراجعة" : "Review"}</span>
+                    <span>{t("review")}</span>
                   </div>
                 </div>
               </Link>
             ))}
+
+            {/* Pagination */}
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              hasMore={hasMore}
+              hasPrevious={hasPrevious}
+              locale={locale}
+            />
           </div>
         )}
       </div>
     </div>
   );
 }
-

@@ -455,6 +455,8 @@ async function main() {
 
     for (let i = 0; i < lessons.length; i++) {
       const lessonData = lessons[i];
+      if (!lessonData) continue;
+
       const order = existing.length + i + 1;
 
       const lesson = await prisma.lesson.create({
@@ -475,6 +477,8 @@ async function main() {
       // Add questions
       for (let j = 0; j < lessonData.questions.length; j++) {
         const q = lessonData.questions[j];
+        if (!q) continue;
+
         await prisma.question.create({
           data: {
             lessonId: lesson.id,

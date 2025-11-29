@@ -8,6 +8,7 @@ import {
   Trophy,
   XCircle,
 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -18,6 +19,7 @@ export default async function QuizReviewPage({
 }) {
   const { locale, attemptId } = await params;
   const isRTL = locale === "ar";
+  const t = await getTranslations("quizReview");
 
   const session = await auth();
   if (!session?.user?.id) {
@@ -62,10 +64,10 @@ export default async function QuizReviewPage({
             className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 mb-4"
           >
             <ArrowLeft className="h-4 w-4" />
-            <span>{isRTL ? "العودة إلى السجل" : "Back to History"}</span>
+            <span>{t("backToHistory")}</span>
           </Link>
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-            {isRTL ? "مراجعة الاختبار" : "Quiz Review"}
+            {t("title")}
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400">
             {lessonTitle} • {branchName}
@@ -80,7 +82,7 @@ export default async function QuizReviewPage({
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Trophy className="h-6 w-6 text-primary-600 dark:text-primary-400" />
                 <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
-                  {isRTL ? "النتيجة" : "Score"}
+                  {t("score")}
                 </span>
               </div>
               <p className="text-4xl font-bold text-gray-900 dark:text-white">
@@ -97,7 +99,7 @@ export default async function QuizReviewPage({
                   <XCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
                 )}
                 <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
-                  {isRTL ? "الحالة" : "Status"}
+                  {t("status")}
                 </span>
               </div>
               <p
@@ -122,7 +124,7 @@ export default async function QuizReviewPage({
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Target className="h-6 w-6 text-primary-600 dark:text-primary-400" />
                 <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
-                  {isRTL ? "الإجابات الصحيحة" : "Correct"}
+                  {t("correct")}
                 </span>
               </div>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -135,7 +137,7 @@ export default async function QuizReviewPage({
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Clock className="h-6 w-6 text-primary-600 dark:text-primary-400" />
                 <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
-                  {isRTL ? "التاريخ" : "Date"}
+                  {t("date")}
                 </span>
               </div>
               <p className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -155,7 +157,7 @@ export default async function QuizReviewPage({
         {/* Questions Review */}
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            {isRTL ? "مراجعة الأسئلة" : "Questions Review"}
+            {t("questionsReview")}
           </h2>
 
           {attempt.answers.map((answer, index) => {
@@ -188,20 +190,20 @@ export default async function QuizReviewPage({
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <span className="px-3 py-1 rounded-lg bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-semibold">
-                      {isRTL ? "السؤال" : "Question"} {index + 1}
+                      {t("question")} {index + 1}
                     </span>
                     {answer.isCorrect ? (
                       <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">
                         <CheckCircle className="h-4 w-4" />
                         <span className="text-sm font-semibold">
-                          {isRTL ? "صحيح" : "Correct"}
+                          {t("correctLabel")}
                         </span>
                       </div>
                     ) : (
                       <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300">
                         <XCircle className="h-4 w-4" />
                         <span className="text-sm font-semibold">
-                          {isRTL ? "خطأ" : "Incorrect"}
+                          {t("incorrectLabel")}
                         </span>
                       </div>
                     )}
@@ -311,7 +313,7 @@ export default async function QuizReviewPage({
                 {explanation && (
                   <div className="mt-4 p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
                     <p className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-2">
-                      {isRTL ? "التفسير:" : "Explanation:"}
+                      {t("explanation")}
                     </p>
                     <p className="text-blue-800 dark:text-blue-200">
                       {explanation}

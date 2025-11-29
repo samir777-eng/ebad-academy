@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -47,7 +48,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ bookmarks });
     }
   } catch (error: any) {
-    console.error("Error fetching bookmarks:", error);
+    logger.error("Error fetching bookmarks:", error);
     return NextResponse.json(
       { error: error.message || "Failed to fetch bookmarks" },
       { status: 500 }
@@ -104,7 +105,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, isBookmarked: true });
     }
   } catch (error: any) {
-    console.error("Error toggling bookmark:", error);
+    logger.error("Error toggling bookmark:", error);
     return NextResponse.json(
       { error: error.message || "Failed to toggle bookmark" },
       { status: 500 }
