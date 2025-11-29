@@ -1,17 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { Loader2, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Trash2, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 export function DeleteLessonButton({
   lessonId,
   lessonTitle,
-  locale,
 }: {
   lessonId: number;
   lessonTitle: string;
-  locale: string;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -57,8 +55,8 @@ export function DeleteLessonButton({
               Delete Lesson?
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Are you sure you want to delete "{lessonTitle}"? This will also
-              delete:
+              Are you sure you want to delete &ldquo;{lessonTitle}&rdquo;? This
+              will also delete:
             </p>
             <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 mb-6 space-y-1">
               <li>All quiz questions for this lesson</li>
@@ -100,4 +98,3 @@ export function DeleteLessonButton({
     </>
   );
 }
-

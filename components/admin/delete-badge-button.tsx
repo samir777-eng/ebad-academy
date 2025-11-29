@@ -1,17 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { Loader2, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Trash2, Loader2 } from "lucide-react";
+import { useState } from "react";
 
 export function DeleteBadgeButton({
   badgeId,
   badgeName,
-  locale,
 }: {
   badgeId: number;
   badgeName: string;
-  locale: string;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -55,7 +53,8 @@ export function DeleteBadgeButton({
               Delete Badge?
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Are you sure you want to delete "{badgeName}"? This will:
+              Are you sure you want to delete &ldquo;{badgeName}&rdquo;? This
+              will:
             </p>
             <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 mb-6 space-y-1">
               <li>Remove the badge from all users who earned it</li>
@@ -96,4 +95,3 @@ export function DeleteBadgeButton({
     </>
   );
 }
-

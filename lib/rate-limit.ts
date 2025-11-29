@@ -1,8 +1,11 @@
 /**
- * Simple in-memory rate limiting for API routes
- * In production, use Redis or a dedicated rate limiting service
+ * Serverless-compatible rate limiting using Vercel KV
+ * Falls back to in-memory storage for local development
  */
 
+import { kv } from "@vercel/kv";
+
+// In-memory fallback for local development
 type RateLimitStore = {
   [key: string]: {
     count: number;
@@ -10,17 +13,8 @@ type RateLimitStore = {
   };
 };
 
-const store: RateLimitStore = {};
-
-// Clean up old entries every 5 minutes
-setInterval(() => {
-  const now = Date.now();
-  Object.keys(store).forEach((key) => {
-    if (store[key].resetTime < now) {
-      delete store[key];
-    }
-  });
-}, 5 * 60 * 1000);
+const localStore: RateLimitStore = {};
+const hasKV = !!process.env.KV_REST_API_URL;
 
 export type RateLimitConfig = {
   /**
@@ -58,30 +52,19 @@ export type RateLimitResult = {
 };
 
 /**
- * Check if a request should be rate limited
- * @param request - The incoming request
- * @param config - Rate limit configuration
- * @returns Rate limit result
+ * Check if a request should be rate limited (local fallback)
  */
-export function checkRateLimit(
-  request: Request,
-  config: RateLimitConfig
+function checkRateLimitLocal(
+  key: string,
+  maxRequests: number,
+  windowMs: number
 ): RateLimitResult {
-  const { maxRequests, windowMs, identifier } = config;
-
-  // Get identifier (IP address or custom identifier)
-  const key =
-    identifier ||
-    request.headers.get("x-forwarded-for") ||
-    request.headers.get("x-real-ip") ||
-    "unknown";
-
   const now = Date.now();
-  const entry = store[key];
+  const entry = localStore[key];
 
   // If no entry exists or the window has expired, create a new one
   if (!entry || entry.resetTime < now) {
-    store[key] = {
+    localStore[key] = {
       count: 1,
       resetTime: now + windowMs,
     };
@@ -108,6 +91,94 @@ export function checkRateLimit(
     resetIn,
     limit: maxRequests,
   };
+}
+
+/**
+ * Check if a request should be rate limited (Vercel KV)
+ */
+async function checkRateLimitKV(
+  key: string,
+  maxRequests: number,
+  windowMs: number
+): Promise<RateLimitResult> {
+  const now = Date.now();
+  const kvKey = `ratelimit:${key}`;
+
+  try {
+    // Get current count and reset time
+    const data = await kv.get<{ count: number; resetTime: number }>(kvKey);
+
+    // If no entry exists or the window has expired, create a new one
+    if (!data || data.resetTime < now) {
+      const resetTime = now + windowMs;
+      await kv.set(kvKey, { count: 1, resetTime }, { px: windowMs });
+
+      return {
+        allowed: true,
+        remaining: maxRequests - 1,
+        resetIn: windowMs,
+        limit: maxRequests,
+      };
+    }
+
+    // Increment the count
+    const newCount = data.count + 1;
+    await kv.set(
+      kvKey,
+      { count: newCount, resetTime: data.resetTime },
+      {
+        pxat: data.resetTime,
+      }
+    );
+
+    // Check if the limit has been exceeded
+    const allowed = newCount <= maxRequests;
+    const remaining = Math.max(0, maxRequests - newCount);
+    const resetIn = data.resetTime - now;
+
+    return {
+      allowed,
+      remaining,
+      resetIn,
+      limit: maxRequests,
+    };
+  } catch (error) {
+    // If KV fails, allow the request but log the error
+    console.error("Rate limit KV error:", error);
+    return {
+      allowed: true,
+      remaining: maxRequests,
+      resetIn: windowMs,
+      limit: maxRequests,
+    };
+  }
+}
+
+/**
+ * Check if a request should be rate limited
+ * @param request - The incoming request
+ * @param config - Rate limit configuration
+ * @returns Rate limit result
+ */
+export async function checkRateLimit(
+  request: Request,
+  config: RateLimitConfig
+): Promise<RateLimitResult> {
+  const { maxRequests, windowMs, identifier } = config;
+
+  // Get identifier (IP address or custom identifier)
+  const key =
+    identifier ||
+    request.headers.get("x-forwarded-for") ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
+
+  // Use Vercel KV in production if available, otherwise use local store
+  if (hasKV) {
+    return await checkRateLimitKV(key, maxRequests, windowMs);
+  } else {
+    return checkRateLimitLocal(key, maxRequests, windowMs);
+  }
 }
 
 /**
@@ -139,4 +210,3 @@ export function createRateLimitResponse(
     }
   );
 }
-

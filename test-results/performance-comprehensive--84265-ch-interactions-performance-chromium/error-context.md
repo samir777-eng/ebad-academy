@@ -13,32 +13,12 @@
         - generic [ref=e16]: Issue
       - button "Collapse issues badge" [ref=e17]:
         - img [ref=e18]
-  - generic [ref=e20]:
-    - generic [ref=e21]:
-      - link "AR" [ref=e22] [cursor=pointer]:
-        - /url: /ar/login
-        - img [ref=e23]
-        - generic [ref=e26]: AR
-      - button [ref=e28] [cursor=pointer]:
-        - img [ref=e30]
-    - generic [ref=e36]:
-      - heading "Login" [level=2] [ref=e38]
-      - generic [ref=e39]:
-        - generic [ref=e40]: Invalid email or password
-        - generic [ref=e41]:
-          - generic [ref=e42]:
-            - generic [ref=e43]: Email
-            - textbox "Email" [ref=e44]: test@example.com
-          - generic [ref=e45]:
-            - generic [ref=e46]: Password
-            - generic [ref=e47]:
-              - textbox "Password" [ref=e48]: password
-              - button "Show password" [ref=e49] [cursor=pointer]:
-                - img [ref=e50]
-        - button "Sign In" [ref=e53] [cursor=pointer]
-        - generic [ref=e54]:
-          - text: Don't have an account?
-          - link "Register here" [ref=e55] [cursor=pointer]:
-            - /url: /en/register
-  - alert [ref=e56]
+  - generic [ref=e21]:
+    - img [ref=e22]
+    - heading "عذراً، حدث خطأ" [level=2] [ref=e24]
+    - paragraph [ref=e25]: NEXT_HTTP_ERROR_FALLBACK;404
+    - button "إعادة المحاولة" [ref=e26] [cursor=pointer]:
+      - img [ref=e27]
+      - text: إعادة المحاولة
+  - alert [ref=e32]
 ```

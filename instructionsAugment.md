@@ -33,6 +33,12 @@
   - Hadith (الحديث) 📜
   - Tarbiyah (التربية) 💎
 - Interactive lessons with video content
+- **Visual Mind Map System** (NEW!)
+  - Interactive node-based visualization
+  - Custom relationships between concepts
+  - Dual editor modes (tree + visual)
+  - Rich metadata (dates, locations, participants, sources)
+  - Bilingual support with RTL layout
 - Self-grading quizzes
 - Progress tracking
 - Spiritual progress tracker
@@ -58,12 +64,61 @@
 - **Badge**: Achievement system
 - **SpiritualProgress**: Daily worship tracking
 
+### Mind Map Models (NEW!)
+
+- **MindMapNode**: Visual mind map nodes with rich metadata
+  - Hierarchical structure (parentId, level, order)
+  - Node types (ROOT, CATEGORY, TOPIC, SUBTOPIC, DETAIL)
+  - Rich metadata (dates, locations, participants, sources, decisions, outcomes)
+  - Visual properties (color, icon, shape, positionX, positionY)
+  - Bilingual content (titleAr, titleEn, descriptionAr, descriptionEn)
+- **MindMapRelationship**: Custom connections between nodes
+  - Relationship types (RELATED, PREREQUISITE, LEADS_TO, EXAMPLE_OF, etc.)
+  - Visual styling (color, lineWidth, lineStyle, labelAr, labelEn)
+  - Handle positions (sourceHandle, targetHandle)
+- **MindMapAttachment**: File attachments for nodes
+  - Support for images, documents, videos
+  - File metadata (name, type, size, URL)
+
 ### Important Relationships
 
 - Lessons belong to both a Branch and a Level
 - Users unlock levels progressively
 - Level unlocks when ALL lessons in current level are completed with passing quiz scores (≥60%)
 - Level 1 is automatically unlocked for new users
+- **Mind Map Nodes** have hierarchical parent-child relationships
+- **Mind Map Relationships** create custom non-hierarchical connections between nodes
+
+---
+
+## 🎨 Design System
+
+### Colors
+
+- Primary: Blue gradient (#3B82F6 → #1E40AF)
+- Secondary: Purple (#8B5CF6)
+- Accent: Teal (#14B8A6)
+- Background: Dark navy (#0F172A)
+- Text: White/Gray scale
+
+### Mind Map Node Colors
+
+- ROOT: Purple gradient (#8B5CF6 → #6D28D9)
+- CATEGORY: Blue gradient (#3B82F6 → #1E40AF)
+- TOPIC: Teal gradient (#14B8A6 → #0D9488)
+- SUBTOPIC: Green gradient (#10B981 → #059669)
+- DETAIL: Orange gradient (#F59E0B → #D97706)
+
+### Components
+
+- Glassmorphism effects
+- Gradient backgrounds
+- Animated hover states
+- Responsive cards
+- Progress indicators
+- Interactive buttons
+- **Mind Map Nodes**: Rounded corners, shadows, gradient backgrounds, hover effects
+- **Custom Edges**: Colored lines, adjustable width, arrow markers, bilingual labels
 
 ---
 
@@ -93,10 +148,10 @@
 ### Production
 
 - **Platform**: Vercel
-- **URL**: https://ebad-academy.vercel.app
+- **URL**: <https://ebad-academy.vercel.app>
 - **Database**: Vercel Postgres (Neon Serverless)
 - **Auto-Deploy**: Pushes to `main` branch trigger deployment
-- **GitHub**: https://github.com/samir777-eng/ebad-academy
+- **GitHub**: <https://github.com/samir777-eng/ebad-academy>
 
 ### Environment Variables (Production)
 
@@ -109,7 +164,7 @@ NEXTAUTH_SECRET - (set in Vercel)
 
 ### Local Development
 
-- **URL**: http://localhost:3000
+- **URL**: <http://localhost:3000>
 - **Database**: SQLite (`dev.db`)
 - **Environment**: `.env.local`
 
@@ -261,8 +316,8 @@ git push                   # Auto-deploys to Vercel
 
 1. **Create Lesson Content**
 
-   - Login to admin panel: https://ebad-academy.vercel.app/ar/admin
-   - Or locally: http://localhost:3000/ar/admin
+   - Login to admin panel: <https://ebad-academy.vercel.app/ar/admin>
+   - Or locally: <http://localhost:3000/ar/admin>
    - Create lessons for each branch/level
 
 2. **Test Student Experience**
@@ -291,10 +346,10 @@ git push                   # Auto-deploys to Vercel
 
 ## 🔗 URLs
 
-- **Production**: https://ebad-academy.vercel.app
-- **Local Dev**: http://localhost:3000
-- **GitHub**: https://github.com/samir777-eng/ebad-academy
-- **Vercel Dashboard**: https://vercel.com/samir777-engs-projects/ebad-academy
+- **Production**: <https://ebad-academy.vercel.app>
+- **Local Dev**: <http://localhost:3000>
+- **GitHub**: <https://github.com/samir777-eng/ebad-academy>
+- **Vercel Dashboard**: <https://vercel.com/samir777-engs-projects/ebad-academy>
 
 ---
 
@@ -363,7 +418,15 @@ app/
     ├── auth/             # NextAuth routes
     ├── register/         # Registration endpoint
     ├── setup-db/         # Database initialization
-    └── dashboard/        # Dashboard data APIs
+    ├── dashboard/        # Dashboard data APIs
+    └── admin/
+        └── mindmap/      # Mind Map API (NEW!)
+            ├── tree/     # Get hierarchical tree
+            ├── nodes/    # CRUD operations
+            ├── nodes/[id]/  # Single node operations
+            ├── relationships/  # Custom connections
+            ├── attachments/    # File uploads
+            └── reorder/  # Bulk reordering
 ```
 
 ### Translation System
@@ -541,13 +604,116 @@ npm run db:local:reset
 - ✅ SQL injection prevention
 - ✅ XSS protection
 - ✅ Rate limiting on auth endpoints
+- ✅ **Rate limiting on Mind Map API** (100/min reads, 30/min writes, 10/min bulk)
 - ✅ Input validation and sanitization
+- ✅ **DOMPurify sanitization for Mind Map content**
 - ✅ HTTPS only (production)
 - ✅ Secure session management
 - ✅ Role-based access control
+- ✅ **Admin-only access for Mind Map editing**
+- ✅ **CSRF protection with origin validation**
 
 ---
 
-**Last Updated**: 2025-11-24
-**Developer**: Samir Eldirini (samireldirini@gmail.com)
+## 🗺️ Mind Map System (NEW!)
+
+### Features
+
+**Visual Editor:**
+
+- Interactive ReactFlow-based visualization
+- Dual view modes (tree + visual)
+- Drag-and-drop node positioning
+- Grid background with snap-to-grid
+- Connection line width control (1-10px)
+- Fullscreen editing mode
+- MiniMap for navigation
+- Export to PNG
+
+**Node System:**
+
+- 5 node types (ROOT, CATEGORY, TOPIC, SUBTOPIC, DETAIL)
+- Rich metadata (dates, locations, participants, sources, decisions, outcomes)
+- Bilingual content (Arabic/English)
+- Visual properties (color, icon, shape, position)
+- Hierarchical parent-child relationships
+
+**Custom Relationships:**
+
+- 7 relationship types (RELATED, PREREQUISITE, LEADS_TO, EXAMPLE_OF, CONTRADICTS, ELABORATES, PART_OF)
+- Custom colors and line styles
+- Adjustable line width
+- Bilingual labels
+- Arrow markers for directionality
+
+**Student View:**
+
+- Read-only interactive visualization
+- Node detail panel with rich metadata
+- Relationship visualization
+- Export functionality
+- Fullscreen mode
+- Keyboard navigation (Tab, Enter, Space)
+- Screen reader support
+
+### API Endpoints
+
+All endpoints require admin authentication and have rate limiting:
+
+- `GET /api/admin/mindmap/tree?lessonId={id}` - Get hierarchical tree (100/min)
+- `GET /api/admin/mindmap/nodes?lessonId={id}` - List nodes with pagination (100/min)
+- `POST /api/admin/mindmap/nodes` - Create new node (30/min)
+- `GET /api/admin/mindmap/nodes/[id]` - Get single node (100/min)
+- `PUT /api/admin/mindmap/nodes/[id]` - Update node (30/min)
+- `DELETE /api/admin/mindmap/nodes/[id]` - Delete node (30/min)
+- `POST /api/admin/mindmap/relationships` - Create relationship (30/min)
+- `DELETE /api/admin/mindmap/relationships` - Delete relationship (30/min)
+- `POST /api/admin/mindmap/attachments` - Upload attachment (30/min)
+- `DELETE /api/admin/mindmap/attachments` - Delete attachment (30/min)
+- `POST /api/admin/mindmap/reorder` - Bulk reorder nodes (10/min)
+
+### Components
+
+**Admin:**
+
+- `SimpleMindMapEditor` - Tree-based editor with metadata forms
+- `AdminVisualMindMapEditor` - ReactFlow visual editor with drag-and-drop
+- `MindMapNodeComponent` - Custom node component with handles
+
+**Student:**
+
+- `MindMapViewer` - Wrapper with error boundary and loading states
+- `VisualMindMap` - Read-only ReactFlow visualization
+- `MindMapNodeComponent` - Read-only node display
+
+### Documentation
+
+Comprehensive documentation available in `/docs`:
+
+- **COMPLETED_FEATURES.md** - All implemented features with statistics
+- **FUTURE_FEATURES.md** - 20+ planned features with roadmap
+- **README.md** - Documentation index and quick start
+
+### Security Features
+
+- ✅ Rate limiting on all endpoints
+- ✅ Input validation with Zod schemas
+- ✅ DOMPurify sanitization for XSS prevention
+- ✅ Admin-only access control
+- ✅ CSRF protection
+- ✅ Depth limit for recursive operations (max 100 levels)
+- ✅ Transaction support for data integrity
+
+### Performance Optimizations
+
+- ✅ Database indexes for common queries
+- ✅ Optimized tree building (single query + in-memory)
+- ✅ Pagination for large datasets
+- ✅ Position persistence for layout
+- ✅ No N+1 query problems
+
+---
+
+**Last Updated**: 2025-01-28
+**Developer**: Samir Eldirini (<samireldirini@gmail.com>)
 **AI Assistant**: Augment Agent (Claude Sonnet 4.5)

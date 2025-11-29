@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/admin";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ArrowLeft, Award, Edit, Plus, Users } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -13,6 +14,7 @@ export default async function AdminBadgesPage({
 }) {
   const { locale } = await params;
   const session = await auth();
+  const t = await getTranslations("admin");
 
   if (!session?.user?.id) {
     redirect(`/${locale}/login`);
@@ -111,14 +113,13 @@ export default async function AdminBadgesPage({
                     <Link
                       href={`/${locale}/admin/badges/${badge.id}/edit`}
                       className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                      title="Edit badge"
+                      title={t("editBadge")}
                     >
                       <Edit className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                     </Link>
                     <DeleteBadgeButton
                       badgeId={badge.id}
                       badgeName={badge.nameEn}
-                      locale={locale}
                     />
                   </div>
                 </div>
@@ -145,7 +146,7 @@ export default async function AdminBadgesPage({
                       `Pass ${badge.criteriaValue} quizzes`}
                     {badge.criteriaType === "perfect_score" &&
                       `Get ${badge.criteriaValue} perfect scores (100%)`}
-                    {badge.criteriaType === "manual" && "Manually assigned"}
+                    {badge.criteriaType === "manual" && t("manuallyAssigned")}
                   </p>
                 </div>
 
@@ -162,7 +163,7 @@ export default async function AdminBadgesPage({
                         : "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300"
                     }`}
                   >
-                    {badge.criteriaType === "manual" ? "Manual" : "Auto"}
+                    {badge.criteriaType === "manual" ? t("manual") : t("auto")}
                   </span>
                 </div>
               </div>

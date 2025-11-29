@@ -1,4 +1,5 @@
 import { DashboardLayout } from "@/components/dashboard/layout";
+import { Providers } from "@/components/providers";
 import { isAdmin } from "@/lib/admin";
 
 export default async function Layout({
@@ -12,8 +13,10 @@ export default async function Layout({
   const admin = await isAdmin();
 
   return (
-    <DashboardLayout locale={locale} isAdmin={admin}>
-      {children}
-    </DashboardLayout>
+    <Providers>
+      <DashboardLayout locale={locale} isAdmin={admin}>
+        {children}
+      </DashboardLayout>
+    </Providers>
   );
 }

@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -123,7 +124,7 @@ export async function GET(req: NextRequest) {
         : null,
     });
   } catch (error) {
-    console.error("Level stats error:", error);
+    logger.error("Level stats error:", error);
     return NextResponse.json(
       { error: "Failed to fetch level stats" },
       { status: 500 }

@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
-  MoreVertical,
   Eye,
+  Loader2,
+  MoreVertical,
   Shield,
   ShieldOff,
   Trash2,
-  Loader2,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 type User = {
   id: string;
@@ -187,8 +187,8 @@ export function UserActionsMenu({
               Delete User?
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Are you sure you want to delete "{user.name}"? This will
-              permanently delete:
+              Are you sure you want to delete &ldquo;{user.name}&rdquo;? This
+              will permanently delete:
             </p>
             <ul className="list-disc list-inside text-sm text-gray-600 dark:text-gray-400 mb-6 space-y-1">
               <li>User account and profile</li>

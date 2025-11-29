@@ -1,16 +1,18 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 
 interface UserFiltersProps {
-  locale: string;
   initialSearch?: string;
   initialRole?: string;
 }
 
-export function UserFilters({ locale, initialSearch = "", initialRole = "" }: UserFiltersProps) {
+export function UserFilters({
+  initialSearch = "",
+  initialRole = "",
+}: UserFiltersProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -20,13 +22,13 @@ export function UserFilters({ locale, initialSearch = "", initialRole = "" }: Us
 
   const updateFilters = (newSearch: string, newRole: string) => {
     const params = new URLSearchParams(searchParams);
-    
+
     if (newSearch) {
       params.set("search", newSearch);
     } else {
       params.delete("search");
     }
-    
+
     if (newRole) {
       params.set("role", newRole);
     } else {
@@ -86,4 +88,3 @@ export function UserFilters({ locale, initialSearch = "", initialRole = "" }: Us
     </div>
   );
 }
-

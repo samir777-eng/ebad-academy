@@ -73,7 +73,6 @@ export default async function BranchPage({
 
   // Create a Set of unlocked level IDs for quick lookup
   const unlockedLevelIds = new Set(userLevelStatus.map((ls) => ls.levelId));
-  const currentLevelId = userLevelStatus[0]?.levelId || 1;
 
   // Calculate progress
   const totalLessons = branch.lessons.length;
@@ -171,7 +170,8 @@ export default async function BranchPage({
         {Object.entries(lessonsByLevel)
           .sort(([a], [b]) => Number(a) - Number(b))
           .map(([levelId, lessons]) => {
-            const level = lessons[0].level;
+            const level = lessons[0]?.level;
+            if (!level) return null; // Skip if level data is missing
             const levelName = locale === "ar" ? level.nameAr : level.nameEn;
             const isLevelUnlocked = unlockedLevelIds.has(Number(levelId));
 

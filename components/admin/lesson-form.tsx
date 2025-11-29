@@ -1,6 +1,7 @@
 "use client";
 
-import { Loader2, Plus, Save } from "lucide-react";
+import { Loader2, Network, Plus, Save } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { QuestionBuilder } from "./question-builder";
@@ -163,10 +164,6 @@ export function LessonForm({
         order: questions.length + 1,
       },
     ]);
-  };
-
-  const removeQuestion = (index: number) => {
-    setQuestions(questions.filter((_, i) => i !== index));
   };
 
   const handlePdfUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -477,6 +474,29 @@ export function LessonForm({
         </p>
         <QuestionBuilder questions={questions} onChange={setQuestions} />
       </div>
+
+      {/* Mind Map Section - Only show in edit mode */}
+      {mode === "edit" && lesson && (
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                Mind Map
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                Create an interactive mind map for this lesson
+              </p>
+            </div>
+            <Link
+              href={`/${locale}/admin/mindmap/editor/${lesson.id}`}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Network className="w-4 h-4" />
+              Open Mind Map Editor
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Submit Button */}
       <div className="flex items-center justify-end gap-4">

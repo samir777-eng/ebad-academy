@@ -8,7 +8,9 @@ export function ThemeToggle() {
   const { actualTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
+  // This is a legitimate pattern to prevent hydration mismatch
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

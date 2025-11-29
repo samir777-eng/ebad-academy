@@ -26,7 +26,7 @@ async function main() {
     },
   });
 
-  const adminUser = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: "admin@example.com" },
     update: {
       password: adminPassword,
@@ -561,24 +561,26 @@ async function main() {
 
           if (!existingQuestion) {
             const question = aqeedahQuestions[i];
-            await prisma.question.create({
-              data: {
-                lessonId: lesson.id,
-                questionTextAr: question.questionTextAr,
-                questionTextEn: question.questionTextEn,
-                type: question.type,
-                optionsAr: question.optionsAr
-                  ? JSON.stringify(question.optionsAr)
-                  : null,
-                optionsEn: question.optionsEn
-                  ? JSON.stringify(question.optionsEn)
-                  : null,
-                correctAnswer: question.correctAnswer,
-                explanationAr: question.explanationAr,
-                explanationEn: question.explanationEn,
-                order: i + 1,
-              },
-            });
+            if (question) {
+              await prisma.question.create({
+                data: {
+                  lessonId: lesson.id,
+                  questionTextAr: question.questionTextAr,
+                  questionTextEn: question.questionTextEn,
+                  type: question.type,
+                  optionsAr: question.optionsAr
+                    ? JSON.stringify(question.optionsAr)
+                    : null,
+                  optionsEn: question.optionsEn
+                    ? JSON.stringify(question.optionsEn)
+                    : null,
+                  correctAnswer: question.correctAnswer,
+                  explanationAr: question.explanationAr,
+                  explanationEn: question.explanationEn,
+                  order: i + 1,
+                },
+              });
+            }
           }
         }
         console.log(`✅ 15 questions created for Aqeedah lesson`);

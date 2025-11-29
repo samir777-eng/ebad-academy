@@ -28,7 +28,7 @@ export default async function AdminAnalyticsPage({
   // Get analytics data
   const [
     totalUsers,
-    totalLessons,
+    _totalLessons, // Fetched for potential future use
     totalQuizAttempts,
     passedQuizzes,
     completedLessons,

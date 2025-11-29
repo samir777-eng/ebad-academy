@@ -32,12 +32,13 @@ export function QuestionBuilder({ questions, onChange }: QuestionBuilderProps) {
 
   const updateQuestion = (index: number, field: string, value: any) => {
     const updated = [...questions];
-    updated[index] = { ...updated[index], [field]: value };
+    updated[index] = { ...updated[index], [field]: value } as Question;
     onChange(updated);
   };
 
   const addOption = (questionIndex: number, language: "En" | "Ar") => {
     const question = questions[questionIndex];
+    if (!question) return;
     const optionsKey = `options${language}` as "optionsEn" | "optionsAr";
     const options = question[optionsKey]
       ? JSON.parse(question[optionsKey])
@@ -53,6 +54,7 @@ export function QuestionBuilder({ questions, onChange }: QuestionBuilderProps) {
     language: "En" | "Ar"
   ) => {
     const question = questions[questionIndex];
+    if (!question) return;
     const optionsKey = `options${language}` as "optionsEn" | "optionsAr";
     const options = JSON.parse(question[optionsKey] || "[]");
     options[optionIndex] = value;
@@ -65,6 +67,7 @@ export function QuestionBuilder({ questions, onChange }: QuestionBuilderProps) {
     language: "En" | "Ar"
   ) => {
     const question = questions[questionIndex];
+    if (!question) return;
     const optionsKey = `options${language}` as "optionsEn" | "optionsAr";
     const options = JSON.parse(question[optionsKey] || "[]");
     options.splice(optionIndex, 1);
@@ -83,7 +86,9 @@ export function QuestionBuilder({ questions, onChange }: QuestionBuilderProps) {
     if (newIndex < 0 || newIndex >= questions.length) return;
 
     const updated = [...questions];
-    [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
+    const temp = updated[index];
+    updated[index] = updated[newIndex] as Question;
+    updated[newIndex] = temp as Question;
     onChange(updated);
 
     if (expandedIndex === index) {
@@ -97,7 +102,7 @@ export function QuestionBuilder({ questions, onChange }: QuestionBuilderProps) {
     <div className="space-y-4">
       {questions.length === 0 ? (
         <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-          No questions yet. Click "Add Question" to create one.
+          No questions yet. Click &ldquo;Add Question&rdquo; to create one.
         </div>
       ) : (
         questions.map((question, index) => {

@@ -49,12 +49,6 @@ export async function checkAndUnlockNextLevel(
       },
     });
 
-    // Calculate completion percentage
-    const completedLessons = new Set([
-      ...userProgress.map((p) => p.lessonId),
-      ...quizAttempts.map((a) => a.lessonId),
-    ]);
-
     // A lesson is considered complete if BOTH conditions are met:
     // 1. It has a passing quiz attempt
     // 2. It's marked as completed in UserProgress

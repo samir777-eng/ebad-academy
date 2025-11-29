@@ -26,16 +26,15 @@ export function ThemeProvider({
   storageKey = "ebad-academy-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(defaultTheme);
-  const [actualTheme, setActualTheme] = useState<"light" | "dark">("light");
-
-  useEffect(() => {
-    // Load theme from localStorage on mount
-    const storedTheme = localStorage.getItem(storageKey) as Theme | null;
-    if (storedTheme) {
-      setTheme(storedTheme);
+  const [theme, setTheme] = useState<Theme>(() => {
+    try {
+      const storedTheme = localStorage.getItem(storageKey) as Theme | null;
+      return storedTheme || defaultTheme;
+    } catch {
+      return defaultTheme;
     }
-  }, [storageKey]);
+  });
+  const [actualTheme, setActualTheme] = useState<"light" | "dark">("light");
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -54,6 +53,9 @@ export function ThemeProvider({
     }
 
     root.classList.add(effectiveTheme);
+
+    // This is a legitimate side effect - syncing external state (DOM/localStorage) with React state
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setActualTheme(effectiveTheme);
 
     // Save to localStorage
@@ -98,4 +100,3 @@ export const useTheme = () => {
 
   return context;
 };
-

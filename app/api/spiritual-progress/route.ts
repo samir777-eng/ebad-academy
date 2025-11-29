@@ -1,6 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
+import { sanitizeText } from "@/lib/sanitize";
+import { NextRequest, NextResponse } from "next/server";
 
 // Get spiritual progress for a date range
 export async function GET(req: NextRequest) {
@@ -30,7 +32,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ progress });
   } catch (error: any) {
-    console.error("Error fetching spiritual progress:", error);
+    logger.error("Error fetching spiritual progress:", error);
     return NextResponse.json(
       { error: error.message || "Failed to fetch progress" },
       { status: 500 }
@@ -69,6 +71,12 @@ export async function POST(req: NextRequest) {
     const progressDate = date ? new Date(date) : new Date();
     progressDate.setHours(0, 0, 0, 0); // Normalize to start of day
 
+    // Sanitize user-generated content
+    const sanitizedNotes = notes ? sanitizeText(notes) : undefined;
+    const sanitizedGoodDeeds = goodDeeds
+      ? goodDeeds.map((deed: string) => sanitizeText(deed))
+      : undefined;
+
     // Upsert progress (create or update)
     const progress = await prisma.spiritualProgress.upsert({
       where: {
@@ -91,8 +99,10 @@ export async function POST(req: NextRequest) {
         dhikr: dhikr ?? undefined,
         dhikrCount: dhikrCount ?? undefined,
         dua: dua ?? undefined,
-        goodDeeds: goodDeeds ? JSON.stringify(goodDeeds) : undefined,
-        notes: notes ?? undefined,
+        goodDeeds: sanitizedGoodDeeds
+          ? JSON.stringify(sanitizedGoodDeeds)
+          : undefined,
+        notes: sanitizedNotes,
         updatedAt: new Date(),
       },
       create: {
@@ -111,18 +121,19 @@ export async function POST(req: NextRequest) {
         dhikr: dhikr || false,
         dhikrCount: dhikrCount || 0,
         dua: dua || false,
-        goodDeeds: goodDeeds ? JSON.stringify(goodDeeds) : null,
-        notes: notes || null,
+        goodDeeds: sanitizedGoodDeeds
+          ? JSON.stringify(sanitizedGoodDeeds)
+          : null,
+        notes: sanitizedNotes || null,
       },
     });
 
     return NextResponse.json({ success: true, progress });
   } catch (error: any) {
-    console.error("Error saving spiritual progress:", error);
+    logger.error("Error saving spiritual progress:", error);
     return NextResponse.json(
       { error: error.message || "Failed to save progress" },
       { status: 500 }
     );
   }
 }
-

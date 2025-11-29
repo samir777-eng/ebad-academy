@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
 import { auth } from "@/lib/auth";
 import { requireAdmin } from "@/lib/admin";
 import { writeFile, mkdir } from "fs/promises";
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest) {
       filename: originalName,
     });
   } catch (error: any) {
-    console.error("Error uploading PDF:", error);
+    logger.error("Error uploading PDF:", error);
     return NextResponse.json(
       { error: error.message || "Failed to upload PDF" },
       { status: 500 }

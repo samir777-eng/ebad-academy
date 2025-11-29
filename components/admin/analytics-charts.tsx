@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp, BookOpen, Target } from "lucide-react";
+import { BookOpen, Target, TrendingUp } from "lucide-react";
 
 type User = {
   createdAt: Date;
@@ -56,7 +56,7 @@ export function AnalyticsCharts({
     const count = users.filter(
       (u) => new Date(u.createdAt).toISOString().split("T")[0] === date
     ).length;
-    return { date, count };
+    return { date: date as string, count };
   });
 
   const maxUserCount = Math.max(...userGrowth.map((d) => d.count), 1);
@@ -98,7 +98,10 @@ export function AnalyticsCharts({
         </div>
         <div className="h-64 flex items-end gap-1">
           {userGrowth.map((day, index) => (
-            <div key={index} className="flex-1 flex flex-col items-center gap-2">
+            <div
+              key={index}
+              className="flex-1 flex flex-col items-center gap-2"
+            >
               <div className="w-full flex items-end justify-center h-48">
                 <div
                   className="w-full bg-gradient-to-t from-blue-500 to-cyan-400 rounded-t hover:opacity-80 transition-opacity cursor-pointer relative group"
@@ -106,7 +109,9 @@ export function AnalyticsCharts({
                     height: `${(day.count / maxUserCount) * 100}%`,
                     minHeight: day.count > 0 ? "4px" : "0px",
                   }}
-                  title={`${day.count} users on ${new Date(day.date).toLocaleDateString()}`}
+                  title={`${day.count} users on ${new Date(
+                    day.date
+                  ).toLocaleDateString("en-US")}`}
                 >
                   <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                     {day.count} users
@@ -180,7 +185,10 @@ export function AnalyticsCharts({
         </div>
         <div className="h-64 flex items-end gap-4">
           {scoreRanges.map((range, index) => (
-            <div key={index} className="flex-1 flex flex-col items-center gap-2">
+            <div
+              key={index}
+              className="flex-1 flex flex-col items-center gap-2"
+            >
               <div className="w-full flex items-end justify-center h-48">
                 <div
                   className={`w-full rounded-t hover:opacity-80 transition-opacity cursor-pointer relative group ${
@@ -235,7 +243,10 @@ export function AnalyticsCharts({
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
               {popularLessons.map((lesson, index) => (
-                <tr key={lesson.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                <tr
+                  key={lesson.id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                >
                   <td className="px-4 py-3 text-sm font-bold text-gray-900 dark:text-white">
                     #{index + 1}
                   </td>
@@ -260,4 +271,3 @@ export function AnalyticsCharts({
     </div>
   );
 }
-

@@ -1,12 +1,13 @@
 import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { logger } from "./logger";
 import { prisma } from "./prisma";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   // Note: PrismaAdapter is not compatible with CredentialsProvider
   // adapter: PrismaAdapter(prisma),
-  trustHost: true, // Fix CSRF issues in development/testing
+  trustHost: true, // Fix CSRF issues in development/testing/production
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -16,13 +17,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         try {
-          console.log(
-            "[AUTH] Authorize called with email:",
-            credentials?.email
-          );
+          logger.log("[AUTH] Authorize called with email:", credentials?.email);
 
           if (!credentials?.email || !credentials?.password) {
-            console.log("[AUTH] Missing credentials");
+            logger.log("[AUTH] Missing credentials");
             throw new Error("Missing email or password");
           }
 
@@ -30,9 +28,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             where: { email: credentials.email as string },
           });
 
-          console.log("[AUTH] User found:", user ? "Yes" : "No");
+          logger.log("[AUTH] User found:", user ? "Yes" : "No");
           if (user) {
-            console.log("[AUTH] User details:", {
+            logger.log("[AUTH] User details:", {
               id: user.id,
               email: user.email,
               hasPassword: !!user.password,
@@ -40,7 +38,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
 
           if (!user || !user.password) {
-            console.log("[AUTH] User not found or no password");
+            logger.log("[AUTH] User not found or no password");
             throw new Error("Invalid credentials");
           }
 
@@ -49,14 +47,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             user.password
           );
 
-          console.log("[AUTH] Password valid:", isPasswordValid);
+          logger.log("[AUTH] Password valid:", isPasswordValid);
 
           if (!isPasswordValid) {
-            console.log("[AUTH] Invalid password");
+            logger.log("[AUTH] Invalid password");
             throw new Error("Invalid password");
           }
 
-          console.log("[AUTH] Login successful for:", user.email);
+          logger.log("[AUTH] Login successful for:", user.email);
           return {
             id: user.id,
             email: user.email,
@@ -65,7 +63,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             languagePref: user.languagePref,
           };
         } catch (error) {
-          console.error("[AUTH] Error in authorize:", error);
+          logger.error("[AUTH] Error in authorize:", error);
           return null;
         }
       },
@@ -78,14 +76,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   session: {
     strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // 24 hours - refresh session if older than this
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id;
         token.role = (user as any).role;
         token.languagePref = (user as any).languagePref;
+        token.iat = Math.floor(Date.now() / 1000); // Issued at timestamp
       }
+
+      // Refresh token data on update trigger
+      if (trigger === "update" && token.id) {
+        const updatedUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true, languagePref: true, name: true, email: true },
+        });
+        if (updatedUser) {
+          token.role = updatedUser.role;
+          token.languagePref = updatedUser.languagePref;
+          token.name = updatedUser.name;
+          token.email = updatedUser.email;
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {

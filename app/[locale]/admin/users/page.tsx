@@ -1,21 +1,33 @@
-import { auth } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { requireAdmin } from "@/lib/admin";
-import { prisma } from "@/lib/prisma";
-import Link from "next/link";
-import { ArrowLeft, Shield, User, TrendingUp } from "lucide-react";
 import { UserActionsMenu } from "@/components/admin/user-actions-menu";
 import { UserFilters } from "@/components/admin/user-filters";
+import { Pagination } from "@/components/ui/pagination";
+import { requireAdmin } from "@/lib/admin";
+import { auth } from "@/lib/auth";
+import { parsePaginationParams } from "@/lib/pagination";
+import { prisma } from "@/lib/prisma";
+import { ArrowLeft, Shield, TrendingUp, User } from "lucide-react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function AdminUsersPage({
   params,
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ search?: string; role?: string }>;
+  searchParams: Promise<{
+    search?: string;
+    role?: string;
+    page?: string;
+    limit?: string;
+  }>;
 }) {
   const { locale } = await params;
-  const { search, role: roleFilter } = await searchParams;
+  const {
+    search,
+    role: roleFilter,
+    page: pageParam,
+    limit: limitParam,
+  } = await searchParams;
   const session = await auth();
 
   if (!session?.user?.id) {
@@ -31,21 +43,33 @@ export default async function AdminUsersPage({
 
   const searchQuery = search || "";
 
-  // Get all users with their progress
+  // Parse pagination parameters
+  const { page, limit, skip } = parsePaginationParams({
+    page: pageParam,
+    limit: limitParam,
+  });
+
+  // Build where clause
+  const where = {
+    AND: [
+      searchQuery
+        ? {
+            OR: [
+              { name: { contains: searchQuery } },
+              { email: { contains: searchQuery } },
+            ],
+          }
+        : {},
+      roleFilter ? { role: roleFilter } : {},
+    ],
+  };
+
+  // Get total count for pagination
+  const totalUsers = await prisma.user.count({ where });
+
+  // Get paginated users with their progress
   const users = await prisma.user.findMany({
-    where: {
-      AND: [
-        searchQuery
-          ? {
-              OR: [
-                { name: { contains: searchQuery } },
-                { email: { contains: searchQuery } },
-              ],
-            }
-          : {},
-        roleFilter ? { role: roleFilter } : {},
-      ],
-    },
+    where,
     include: {
       progress: {
         where: { completed: true },
@@ -62,6 +86,8 @@ export default async function AdminUsersPage({
       },
     },
     orderBy: { createdAt: "desc" },
+    skip,
+    take: limit,
   });
 
   // Calculate statistics for each user
@@ -73,6 +99,11 @@ export default async function AdminUsersPage({
     earnedBadges: user.badges.length,
     currentLevel: user.levelStatus[0]?.level?.levelNumber || 1,
   }));
+
+  // Calculate pagination metadata
+  const totalPages = Math.ceil(totalUsers / limit);
+  const hasMore = page < totalPages;
+  const hasPrevious = page > 1;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -102,11 +133,7 @@ export default async function AdminUsersPage({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters */}
-        <UserFilters
-          locale={locale}
-          initialSearch={searchQuery}
-          initialRole={roleFilter}
-        />
+        <UserFilters initialSearch={searchQuery} initialRole={roleFilter} />
 
         {/* Users Table */}
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
@@ -211,6 +238,15 @@ export default async function AdminUsersPage({
               </tbody>
             </table>
           </div>
+
+          {/* Pagination */}
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            hasMore={hasMore}
+            hasPrevious={hasPrevious}
+            locale={locale}
+          />
         </div>
       </div>
     </div>

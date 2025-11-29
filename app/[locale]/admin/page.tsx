@@ -9,6 +9,7 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -19,6 +20,7 @@ export default async function AdminDashboard({
 }) {
   const { locale } = await params;
   const session = await auth();
+  const t = await getTranslations("admin");
 
   if (!session?.user?.id) {
     redirect(`/${locale}/login`);
@@ -44,28 +46,28 @@ export default async function AdminDashboard({
 
   const stats = [
     {
-      title: "Total Users",
+      title: t("totalUsers"),
       value: totalUsers,
       icon: Users,
       color: "from-blue-500 to-cyan-500",
       href: `/${locale}/admin/users`,
     },
     {
-      title: "Total Lessons",
+      title: t("totalLessons"),
       value: totalLessons,
       icon: Book,
       color: "from-purple-500 to-pink-500",
       href: `/${locale}/admin/lessons`,
     },
     {
-      title: "Total Questions",
+      title: t("totalQuestions"),
       value: totalQuestions,
       icon: FileQuestion,
       color: "from-orange-500 to-red-500",
       href: `/${locale}/admin/questions`,
     },
     {
-      title: "Total Levels",
+      title: t("totalLevels"),
       value: totalLevels,
       icon: GraduationCap,
       color: "from-green-500 to-emerald-500",
@@ -75,29 +77,29 @@ export default async function AdminDashboard({
 
   const quickActions = [
     {
-      title: "Manage Lessons",
-      description: "Create, edit, and delete lessons",
+      title: t("manageLessons"),
+      description: t("manageLessonsDesc"),
       icon: Book,
       href: `/${locale}/admin/lessons`,
       color: "from-purple-500 to-pink-500",
     },
     {
-      title: "Manage Users",
-      description: "View and manage user accounts",
+      title: t("manageUsers"),
+      description: t("manageUsersDesc"),
       icon: Users,
       href: `/${locale}/admin/users`,
       color: "from-blue-500 to-cyan-500",
     },
     {
-      title: "View Analytics",
-      description: "Track platform performance and engagement",
+      title: t("viewAnalytics"),
+      description: t("viewAnalyticsDesc"),
       icon: TrendingUp,
       href: `/${locale}/admin/analytics`,
       color: "from-green-500 to-emerald-500",
     },
     {
-      title: "Manage Badges",
-      description: "Create and manage achievement badges",
+      title: t("manageBadges"),
+      description: t("manageBadgesDesc"),
       icon: Award,
       href: `/${locale}/admin/badges`,
       color: "from-yellow-500 to-orange-500",
@@ -112,17 +114,17 @@ export default async function AdminDashboard({
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                Admin Dashboard
+                {t("title")}
               </h1>
               <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Manage your Ebad Academy platform
+                {t("subtitle")}
               </p>
             </div>
             <Link
               href={`/${locale}/dashboard`}
               className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
             >
-              Back to Dashboard
+              {t("backToDashboard")}
             </Link>
           </div>
         </div>
@@ -160,7 +162,7 @@ export default async function AdminDashboard({
         {/* Quick Actions */}
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            Quick Actions
+            {t("quickActions")}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {quickActions.map((action) => {

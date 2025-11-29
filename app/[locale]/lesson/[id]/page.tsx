@@ -33,12 +33,22 @@ export default async function LessonPage({ params }: PageProps) {
       questions: {
         orderBy: { id: "asc" },
       },
+      mindMapNodes: {
+        where: { isPublished: true },
+        take: 1, // Just check if any published nodes exist
+      },
     },
   });
 
   if (!lesson) {
     notFound();
   }
+
+  // Add hasMindMap property
+  const lessonWithMindMap = {
+    ...lesson,
+    hasMindMap: lesson.mindMapNodes.length > 0,
+  };
 
   // Check if user has access to this lesson (level must be unlocked)
   const userLevelStatus = await prisma.userLevelStatus.findUnique({
@@ -87,7 +97,7 @@ export default async function LessonPage({ params }: PageProps) {
   return (
     <DashboardLayout locale={locale}>
       <LessonViewer
-        lesson={lesson}
+        lesson={lessonWithMindMap}
         userProgress={userProgress}
         previousLessonId={previousLesson?.id}
         nextLessonId={nextLesson?.id}

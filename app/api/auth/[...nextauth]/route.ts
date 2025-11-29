@@ -7,8 +7,16 @@ const { GET: originalGET, POST: originalPOST } = handlers;
 
 // Wrap POST handler with rate limiting for login attempts
 async function POST(req: NextRequest) {
+  // Skip rate limiting in test environment
+  if (
+    process.env.SKIP_CSRF_CHECK === "true" ||
+    process.env.NODE_ENV === "test"
+  ) {
+    return originalPOST(req);
+  }
+
   // Apply rate limiting: max 5 login attempts per 15 minutes per IP
-  const rateLimitResult = checkRateLimit(req, {
+  const rateLimitResult = await checkRateLimit(req, {
     maxRequests: 5,
     windowMs: 15 * 60 * 1000, // 15 minutes
   });

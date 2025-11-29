@@ -12,10 +12,10 @@ datasource db {
 
 model User {
   id            String    @id @default(cuid())
-  idNumber      String    @unique
+  idNumber      String?   @unique
   email         String    @unique
   name          String
-  phoneNumber   String
+  phoneNumber   String?
   password      String
   role          String    @default("student") // "student" or "admin"
   languagePref  String    @default("ar") // "ar" or "en"
@@ -31,6 +31,28 @@ model User {
   actionItemCompletions ActionItemCompletion[]
   videoTimestamps VideoTimestamp[]
   lessonBookmarks LessonBookmark[]
+  createdMindMapNodes MindMapNode[] @relation("CreatedMindMapNodes")
+
+  @@index([email])
+  @@index([role])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  userId        String   // Admin who performed the action
+  action        String   // e.g., "USER_DELETED", "ROLE_CHANGED", "LESSON_DELETED"
+  entityType    String   // e.g., "User", "Lesson", "Badge"
+  entityId      String   // ID of the affected entity
+  details       String?  // JSON string with additional details
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([entityType])
+  @@index([createdAt])
 }
 
 model Level {
@@ -69,7 +91,7 @@ model Lesson {
   videoUrlsEn     String?   // JSON array of video URLs for English
   pdfUrlAr        String?
   pdfUrlEn        String?
-  mindmapData     String?   // Interactive mind map structure (JSON string)
+  mindmapData     String?   // Interactive mind map structure (JSON string) - DEPRECATED, use mindMapNodes
   actionItemsAr   String?   // JSON array of action items in Arabic
   actionItemsEn   String?   // JSON array of action items in English
   duration        Int       // Estimated minutes
@@ -84,8 +106,12 @@ model Lesson {
   actionItemCompletions ActionItemCompletion[]
   videoTimestamps VideoTimestamp[]
   bookmarks       LessonBookmark[]
+  mindMapNodes    MindMapNode[]
 
   @@unique([branchId, levelId, order])
+  @@index([branchId])
+  @@index([levelId])
+  @@index([branchId, levelId])
 }
 
 model Question {
@@ -121,6 +147,10 @@ model UserProgress {
   lesson          Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
+  @@index([userId])
+  @@index([lessonId])
+  @@index([completed])
+  @@index([updatedAt])
 }
 
 model UserLevelStatus {
@@ -150,6 +180,11 @@ model QuizAttempt {
   user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   lesson          Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   answers         UserAnswer[]
+
+  @@index([userId])
+  @@index([lessonId])
+  @@index([attemptDate])
+  @@index([passed])
 }
 
 model UserAnswer {
@@ -290,4 +325,132 @@ model LessonBookmark {
   @@unique([userId, lessonId])
   @@index([userId])
   @@index([lessonId])
+}
+
+// Mind Map Node Model
+model MindMapNode {
+  id              String   @id @default(cuid())
+
+  // Link to existing lesson
+  lessonId        Int
+  lesson          Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  // Hierarchy
+  parentId        String?
+  parent          MindMapNode?  @relation("NodeHierarchy", fields: [parentId], references: [id], onDelete: Restrict)
+  children        MindMapNode[] @relation("NodeHierarchy")
+
+  // Bilingual content
+  titleAr         String
+  titleEn         String
+  descriptionAr   String?
+  descriptionEn   String?
+
+  // Metadata
+  type            String   @default("TOPIC") // ROOT, CATEGORY, TOPIC, SUBTOPIC, DETAIL, NOTE
+  level           Int      @default(0)  // Depth in tree
+  order           Int      @default(0)  // Display order among siblings
+
+  // Visual properties
+  color           String   @default("#4F46E5")
+  icon            String?
+  shape           String   @default("circle") // circle, rect, diamond
+
+  // Canvas positioning (for admin visual editor)
+  positionX       Float?
+  positionY       Float?
+  collapsed       Boolean  @default(false)
+
+  // Historical Context (inspired by Seerah project)
+  dateHijri       String?  // Hijri date (e.g., "12 Rabi' al-Awwal 1 AH")
+  dateGregorian   String?  // Gregorian date (e.g., "622 CE")
+  location        String?  // Location of event
+  participants    String?  // JSON array of participants
+
+  // Decision Analysis
+  decision        String?  // Main decision made
+  alternatives    String?  // JSON array of alternative options considered
+  outcomes        String?  // JSON array of outcomes/results
+
+  // Learning & Application
+  moralLessons    String?  // JSON array of moral/spiritual lessons
+  modernApps      String?  // JSON array of modern applications
+  securityImpact  String?  // Security/strategic impact analysis
+
+  // Documentation
+  sources         String?  // JSON array of source references
+
+  // Flexible metadata for future extensions
+  metadata        String?  // JSON for additional custom fields
+
+  // Status
+  isPublished     Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  createdBy       String
+  creator         User     @relation("CreatedMindMapNodes", fields: [createdBy], references: [id])
+
+  // Relations
+  relationships   MindMapRelationship[] @relation("FromNode")
+  relatedTo       MindMapRelationship[] @relation("ToNode")
+  attachments     MindMapAttachment[]
+
+  @@index([lessonId])
+  @@index([parentId])
+  @@index([isPublished])
+  @@index([type])
+  @@index([createdBy])
+  // Composite indexes for common query patterns
+  @@index([lessonId, isPublished])
+  @@index([lessonId, level, order])
+  @@index([lessonId, type])
+  @@index([parentId, order])
+}
+
+// Mind Map Relationship (connections between nodes)
+model MindMapRelationship {
+  id              String   @id @default(cuid())
+
+  fromNodeId      String
+  fromNode        MindMapNode @relation("FromNode", fields: [fromNodeId], references: [id], onDelete: Cascade)
+
+  toNodeId        String
+  toNode          MindMapNode @relation("ToNode", fields: [toNodeId], references: [id], onDelete: Cascade)
+
+  sourceHandle    String?  // Handle ID on the source node (e.g., "right", "bottom")
+  targetHandle    String?  // Handle ID on the target node (e.g., "left", "top")
+
+  type            String   @default("RELATED") // RELATED, PREREQUISITE, LEADS_TO, EXAMPLE_OF, CONTRADICTS, ELABORATES, PART_OF
+  labelAr         String?
+  labelEn         String?
+
+  // Visual properties
+  lineStyle       String   @default("solid") // solid, dashed, dotted
+  lineWidth       Int      @default(2)
+  color           String   @default("#94a3b8")
+
+  createdAt       DateTime @default(now())
+
+  @@unique([fromNodeId, toNodeId, type])
+  @@index([fromNodeId])
+  @@index([toNodeId])
+}
+
+// Attachments to nodes (Ayahs, Hadiths, notes, links)
+model MindMapAttachment {
+  id              String   @id @default(cuid())
+  nodeId          String
+  node            MindMapNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  type            String   // AYAH, HADITH, NOTE, LINK, IMAGE
+  titleAr         String
+  titleEn         String
+  contentAr       String?
+  contentEn       String?
+  url             String?
+
+  order           Int      @default(0)
+  createdAt       DateTime @default(now())
+
+  @@index([nodeId])
 }

@@ -1,11 +1,11 @@
+import { DeleteLessonButton } from "@/components/admin/delete-lesson-button";
+import { LessonFilters } from "@/components/admin/lesson-filters";
 import { requireAdmin } from "@/lib/admin";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ArrowLeft, Edit, Plus, Video } from "lucide-react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { LessonFilters } from "@/components/admin/lesson-filters";
-import { DeleteLessonButton } from "@/components/admin/delete-lesson-button";
 
 export default async function AdminLessonsPage({
   params,
@@ -88,7 +88,6 @@ export default async function AdminLessonsPage({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters */}
         <LessonFilters
-          locale={locale}
           levels={levels}
           branches={branches}
           initialLevel={levelFilter}
@@ -170,7 +169,6 @@ export default async function AdminLessonsPage({
                           <DeleteLessonButton
                             lessonId={lesson.id}
                             lessonTitle={lesson.titleEn}
-                            locale={locale}
                           />
                         </div>
                       </td>

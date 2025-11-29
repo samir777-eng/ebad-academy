@@ -303,5 +303,179 @@
       "deleteConfirm": "Are you sure you want to delete your account? This action cannot be undone.",
       "cancel": "Cancel"
     }
+  },
+  "admin": {
+    "dashboard": {
+      "totalUsers": "Total Users",
+      "totalLessons": "Total Lessons",
+      "totalQuestions": "Total Questions",
+      "totalLevels": "Total Levels",
+      "manageLessons": "Manage Lessons",
+      "manageLessonsDesc": "Create, edit, and delete lessons",
+      "manageUsers": "Manage Users",
+      "manageUsersDesc": "View and manage user accounts",
+      "viewAnalytics": "View Analytics",
+      "viewAnalyticsDesc": "Track platform performance and engagement",
+      "manageBadges": "Manage Badges",
+      "manageBadgesDesc": "Create and manage achievement badges"
+    },
+    "badges": {
+      "editBadge": "Edit badge",
+      "manuallyAssigned": "Manually assigned",
+      "manual": "Manual",
+      "auto": "Auto"
+    },
+    "users": {
+      "passed": "Passed",
+      "failed": "Failed"
+    },
+    "mindmap": {
+      "editor": "Mind Map Editor",
+      "createNode": "Create New Node",
+      "createNodeDescription": "Add a new concept to your mind map",
+      "loading": "Loading...",
+      "savePositions": "Save Positions",
+      "saveFailed": "Save Failed",
+      "positionsSaved": "Positions saved successfully",
+      "closePanel": "Close Panel",
+      "type": "Type",
+      "color": "Color",
+      "description": "Description",
+      "titleArabic": "Title (Arabic)",
+      "titleEnglish": "Title (English)",
+      "descriptionArabic": "Description (Arabic)",
+      "descriptionEnglish": "Description (English)",
+      "root": "Root",
+      "category": "Category",
+      "topic": "Topic",
+      "subtopic": "Subtopic",
+      "detail": "Detail",
+      "note": "Note",
+      "shape": "Shape",
+      "circle": "Circle",
+      "rectangle": "Rectangle",
+      "diamond": "Diamond",
+      "publishImmediately": "Publish Immediately",
+      "publishHelp": "Make this node visible to students right away",
+      "titleArHelp": "Enter the concept name in Arabic",
+      "titleEnHelp": "Enter the concept name in English",
+      "descriptionArHelp": "Optional: Add more details in Arabic",
+      "descriptionEnHelp": "Optional: Add more details in English",
+      "typeHelp": "Choose hierarchy level",
+      "shapeHelp": "Visual appearance",
+      "colorHelp": "Choose a color to organize visually",
+      "create": "Create Node",
+      "creating": "Creating...",
+      "cancel": "Reset",
+      "nodeCreated": "Node created successfully",
+      "manageMindMap": "Manage Mind Map",
+      "openEditor": "Open Editor",
+      "mindMapExists": "Mind map exists for this lesson",
+      "noMindMapYet": "No mind map yet",
+      "emptyStateTitle": "Start Building Your Mind Map",
+      "emptyStateDescription": "Create your first node to begin visualizing the lesson structure",
+      "step1Title": "Create Root Node",
+      "step1": "Click 'Create New Node' to add the main topic",
+      "step2Title": "Add Categories",
+      "step2": "Break down the topic into major categories",
+      "step3Title": "Build Structure",
+      "step3": "Add topics, subtopics, and details to each category",
+      "step4Title": "Organize & Publish",
+      "step4": "Arrange nodes visually and publish when ready",
+      "proTip": "Pro Tip",
+      "proTipText": "Use different colors and shapes to distinguish between node types for better visual clarity"
+    }
+  },
+  "mindmap": {
+    "mindMap": "Mind Map",
+    "noMindMap": "No mind map for this lesson",
+    "type": "Type",
+    "level": "Level",
+    "attachments": "Attachments"
+  },
+  "achievements": {
+    "title": "Achievements",
+    "dashboard": "Dashboard",
+    "earnedOn": "Earned on",
+    "noBadges": "No badges available yet"
+  },
+  "quizHistory": {
+    "title": "Quiz History",
+    "backToLesson": "Back to Lesson",
+    "noAttempts": "No quiz attempts yet",
+    "attempt": "Attempt",
+    "score": "Score",
+    "correctAnswers": "Correct Answers",
+    "date": "Date",
+    "review": "Review"
+  },
+  "quizReview": {
+    "title": "Quiz Review",
+    "backToHistory": "Back to History",
+    "score": "Score",
+    "status": "Status",
+    "passed": "Passed",
+    "failed": "Failed",
+    "correct": "Correct",
+    "incorrect": "Incorrect",
+    "correctLabel": "Correct",
+    "incorrectLabel": "Incorrect",
+    "date": "Date",
+    "questionsReview": "Questions Review",
+    "question": "Question",
+    "true": "True",
+    "false": "False",
+    "explanation": "Explanation:"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "dashboard": "Dashboard",
+    "subtitle": "Compete with your peers in the learning journey",
+    "yourRank": "Your Current Rank",
+    "totalPoints": "Total Points",
+    "scoringSystem": "Scoring System",
+    "pointsPerLesson": "Points per Lesson",
+    "pointsPerQuiz": "Points per Quiz",
+    "pointsPerBadge": "Points per Badge",
+    "pointsPerLevel": "Points per Level",
+    "anonymous": "Anonymous"
+  },
+  "bookmarks": {
+    "title": "Bookmarked Lessons",
+    "completed": "Completed",
+    "min": "min",
+    "noBookmarks": "No Bookmarked Lessons",
+    "noBookmarksDesc": "Save your favorite lessons for quick access",
+    "browseLessons": "Browse Lessons"
+  },
+  "spiritualProgress": {
+    "title": "Spiritual Progress",
+    "subtitle": "Track your daily worship and good deeds"
+  },
+  "certificate": {
+    "tryAgain": "Try Again",
+    "subtitle": "Get your level completion certificate",
+    "generating": "Generating...",
+    "generate": "Generate Certificate",
+    "title": "Certificate of Completion",
+    "certifies": "This certifies that",
+    "errorGenerate": "Failed to generate certificate"
+  },
+  "errors": {
+    "registrationFailed": "Registration failed",
+    "genericError": "An error occurred. Please try again.",
+    "tooManyAttempts": "Too many login attempts. Please try again later.",
+    "failedToFetch": "Failed to fetch data",
+    "failedToFetchLevels": "Failed to fetch levels",
+    "failedToFetchStats": "Failed to fetch stats",
+    "failedToFetchLevelStats": "Failed to fetch level stats"
+  },
+  "aria": {
+    "hidePassword": "Hide password",
+    "showPassword": "Show password"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next"
   }
 }

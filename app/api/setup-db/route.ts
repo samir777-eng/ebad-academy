@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -48,7 +49,7 @@ export async function GET() {
             order: 4,
           },
         ],
-        skipDuplicates: true,
+        // Note: skipDuplicates not needed since we check if level1 exists above
       });
     }
 
@@ -102,7 +103,7 @@ export async function GET() {
             order: 6,
           },
         ],
-        skipDuplicates: true,
+        // Note: skipDuplicates not needed since we check if branches exist above
       });
     }
 
@@ -129,7 +130,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error("Database setup error:", error);
+    logger.error("Database setup error:", error);
     return NextResponse.json(
       {
         success: false,

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface LevelUnlockModalProps {
   isOpen: boolean;
@@ -27,15 +27,27 @@ export function LevelUnlockModal({
 }: LevelUnlockModalProps) {
   const t = useTranslations("quiz");
   const router = useRouter();
-  const [showConfetti, setShowConfetti] = useState(false);
 
-  useEffect(() => {
-    if (isOpen) {
-      setShowConfetti(true);
-      // Play celebration sound (optional)
-      // new Audio('/sounds/celebration.mp3').play().catch(() => {});
-    }
-  }, [isOpen]);
+  // Generate confetti particles once on mount
+  const [confettiParticles] = useState(() => {
+    const colors = [
+      "#fbbf24",
+      "#f59e0b",
+      "#06b6d4",
+      "#14b8a6",
+      "#3b82f6",
+      "#8b5cf6",
+    ];
+
+    return [...Array(50)].map((_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      top: Math.random() * 20,
+      delay: Math.random() * 3,
+      duration: 3 + Math.random() * 2,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    }));
+  });
 
   if (!isOpen) return null;
 
@@ -132,30 +144,23 @@ export function LevelUnlockModal({
       </div>
 
       {/* Confetti Effect (CSS-based) */}
-      {showConfetti && (
+      {isOpen && (
         <div className="fixed inset-0 pointer-events-none z-40">
-          {[...Array(50)].map((_, i) => (
+          {confettiParticles.map((particle) => (
             <div
-              key={i}
+              key={particle.id}
               className="absolute animate-confetti"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: `-${Math.random() * 20}%`,
-                animationDelay: `${Math.random() * 3}s`,
-                animationDuration: `${3 + Math.random() * 2}s`,
+                left: `${particle.left}%`,
+                top: `-${particle.top}%`,
+                animationDelay: `${particle.delay}s`,
+                animationDuration: `${particle.duration}s`,
               }}
             >
               <div
                 className="w-2 h-2 rounded-full"
                 style={{
-                  backgroundColor: [
-                    "#fbbf24",
-                    "#f59e0b",
-                    "#06b6d4",
-                    "#14b8a6",
-                    "#3b82f6",
-                    "#8b5cf6",
-                  ][Math.floor(Math.random() * 6)],
+                  backgroundColor: particle.color,
                 }}
               />
             </div>

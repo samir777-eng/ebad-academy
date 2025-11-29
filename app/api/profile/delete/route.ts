@@ -1,8 +1,9 @@
 import { auth } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function DELETE(req: Request) {
+export async function DELETE() {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -16,11 +17,10 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Account deletion error:", error);
+    logger.error("Account deletion error:", error);
     return NextResponse.json(
       { error: "Failed to delete account" },
       { status: 500 }
     );
   }
 }
-
